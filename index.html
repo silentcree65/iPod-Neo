@@ -5,7 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="dark light">
 <meta name="referrer" content="strict-origin-when-cross-origin">
-<title>iPod Neo — YouTube &amp; YouTube Music Player</title>
+<meta name="theme-color" content="#1a1238">
+<!-- iPhone: "Add to Home Screen" opens full-screen like an app -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="iPod Neo">
+<meta name="format-detection" content="telephone=no">
+<title>iPod Neo v1.2 — YouTube &amp; YouTube Music Player</title>
 <!-- Optional Google Font; system fonts are used as fallbacks if it cannot load (e.g. offline). -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -18,6 +25,8 @@
   --page-bg: radial-gradient(1200px 700px at 50% -10%, #2a1760 0%, #0b0718 55%, #05030c 100%);
   --page-fg:#e9e6ff; --page-muted:#a7a2cf;
   --banner-bg:#2a1d05; --banner-fg:#fde7b0; --banner-bd:#fbbf24;
+  /* layout variables (overridden by the phone-fit script) */
+  --art:200px; --row:20px; --wheel:180px; --wscale:1; --fs:11.5px; --screen-h:356px;
 }
 @media (prefers-color-scheme: light){
   :root{
@@ -32,7 +41,7 @@
   --fg:#f1ecff; --muted:#a69ed6; --hl-fg:#0a0620;
   --c1:#22d3ee; --c2:#f472b6; --c3:#fbbf24; --c4:#4ade80; --c5:#a78bfa;
   --k1:var(--c1); --k2:var(--c2); --k3:var(--c3); --k4:var(--c4);
-  --wheel:#120b2b; --wheel-stroke:#3b2a7a; --center:#0d0822; --ring:#fb7185; --dot:#f472b6;
+  --wheel-bg:#120b2b; --wheel-stroke:#3b2a7a; --center:#0d0822; --ring:#fb7185; --dot:#f472b6;
 }
 [data-theme="silver"]{
   --body:#d7dae1; --rim:#a3a9b5; --glow:#ffffff; --hair:#7dd3fc;
@@ -40,7 +49,7 @@
   --fg:#eef3fa; --muted:#9aa7bb; --hl-fg:#0b1220;
   --c1:#22d3ee; --c2:#f472b6; --c3:#fbbf24; --c4:#4ade80; --c5:#a78bfa;
   --k1:#0e7490; --k2:#be185d; --k3:#b45309; --k4:#15803d;
-  --wheel:#f3f4f7; --wheel-stroke:#b9bfca; --center:#dfe2e8; --ring:#e11d48; --dot:#db2777;
+  --wheel-bg:#f3f4f7; --wheel-stroke:#b9bfca; --center:#dfe2e8; --ring:#e11d48; --dot:#db2777;
 }
 [data-theme="midnight"]{
   --body:#0b1020; --rim:#1f2a44; --glow:#38bdf8; --hair:#a78bfa;
@@ -48,7 +57,7 @@
   --fg:#e2e8f0; --muted:#8b9ab3; --hl-fg:#04060e;
   --c1:#38bdf8; --c2:#e879f9; --c3:#facc15; --c4:#34d399; --c5:#818cf8;
   --k1:var(--c1); --k2:var(--c2); --k3:var(--c3); --k4:var(--c4);
-  --wheel:#0a0f1e; --wheel-stroke:#1f2a44; --center:#05080f; --ring:#38bdf8; --dot:#e879f9;
+  --wheel-bg:#0a0f1e; --wheel-stroke:#1f2a44; --center:#05080f; --ring:#38bdf8; --dot:#e879f9;
 }
 [data-theme="sunset"]{
   --body:#3a1028; --rim:#7c2d4f; --glow:#fb923c; --hair:#fde047;
@@ -56,13 +65,14 @@
   --fg:#fff1e6; --muted:#d9a7b8; --hl-fg:#1a0612;
   --c1:#fb923c; --c2:#f472b6; --c3:#fde047; --c4:#4ade80; --c5:#c084fc;
   --k1:var(--c1); --k2:var(--c2); --k3:var(--c3); --k4:var(--c4);
-  --wheel:#2a0b1f; --wheel-stroke:#7c2d4f; --center:#1a0612; --ring:#fb7185; --dot:#fb923c;
+  --wheel-bg:#2a0b1f; --wheel-stroke:#7c2d4f; --center:#1a0612; --ring:#fb7185; --dot:#fb923c;
 }
 
 /* ============================================================
    PAGE
    ============================================================ */
 *{box-sizing:border-box}
+html{touch-action:manipulation;-webkit-text-size-adjust:100%;text-size-adjust:100%}
 html,body{margin:0;min-height:100%}
 body{
   font-family:'Chakra Petch',system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;
@@ -76,13 +86,13 @@ body{
 .banner{
   width:100%; max-width:560px; display:flex; align-items:flex-start; gap:8px;
   background:var(--banner-bg); color:var(--banner-fg); border:1px solid var(--banner-bd);
-  border-radius:12px; padding:8px 10px; font-size:13px; line-height:1.4;
+  border-radius:12px; padding:8px 10px; font-size:13px; line-height:1.4; z-index:20;
 }
 .banner[hidden]{display:none}
 .banner p{margin:0;flex:1}
 .banner code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12px}
 .banner a{color:inherit;font-weight:700}
-.banner button{background:none;border:0;color:inherit;font-size:16px;line-height:1;cursor:pointer;padding:2px 4px;border-radius:6px}
+.banner button{background:none;border:0;color:inherit;font-size:18px;line-height:1;cursor:pointer;padding:4px 8px;border-radius:6px}
 .foot{margin:0;font-size:11px;color:var(--page-muted);text-align:center;max-width:320px;line-height:1.4}
 
 /* ============================================================
@@ -90,6 +100,7 @@ body{
    ============================================================ */
 .device{
   position:relative; flex:none; width:308px; padding:10px 10px 16px;
+  display:flex; flex-direction:column;
   border-radius:40px; background:
     linear-gradient(160deg, rgba(255,255,255,.10), rgba(255,255,255,0) 40%),
     var(--body);
@@ -99,11 +110,11 @@ body{
     0 0 26px -2px var(--glow),
     inset 0 0 0 1px var(--hair),             /* inner cyan hairline */
     0 24px 50px -18px rgba(0,0,0,.6);
-  user-select:none; -webkit-user-select:none;
+  user-select:none; -webkit-user-select:none; -webkit-touch-callout:none;
 }
-.bezel{background:var(--bezel);border:1.5px solid var(--bezel-stroke);border-radius:14px;padding:5px}
+.bezel{flex:none;background:var(--bezel);border:1.5px solid var(--bezel-stroke);border-radius:14px;padding:5px}
 .screen{
-  position:relative; height:356px; background:var(--screen); border-radius:9px; overflow:hidden;
+  position:relative; height:var(--screen-h); background:var(--screen); border-radius:9px; overflow:hidden;
   color:var(--fg); display:flex; flex-direction:column;
 }
 /* Header */
@@ -133,11 +144,13 @@ body{
 /* Stage: visible YouTube player (>= 200x200) + side column */
 .stage{flex:none;display:flex;gap:4px;padding:4px 4px 0}
 .artframe{
-  position:relative; flex:none; width:204px; height:204px; padding:2px; border-radius:7px;
+  position:relative; flex:none; width:calc(var(--art) + 4px); height:calc(var(--art) + 4px); padding:2px; border-radius:7px;
   background:linear-gradient(135deg,var(--c1),var(--c5) 45%,var(--c2) 75%,var(--c3));
 }
-.artframe iframe,#yt-player{display:block;position:relative;z-index:1;width:200px;height:200px;border:0;border-radius:5px;background:#000}
-div#yt-player{background:transparent}  /* placeholder div: let the status message show until the iframe replaces it */
+.artframe.tapme{animation:tapme 1s ease-in-out infinite}
+@keyframes tapme{50%{box-shadow:0 0 0 3px var(--c3),0 0 18px var(--c3)}}
+.artframe iframe,#yt-player{display:block;position:relative;z-index:1;width:var(--art);height:var(--art);border:0;border-radius:5px;background:#000}
+div#yt-player{background:transparent} /* placeholder: let the status text show until the iframe replaces it */
 .art-ph{
   position:absolute; inset:2px; z-index:0; border-radius:5px; background:#05030c;
   display:flex; align-items:center; justify-content:center; text-align:center; padding:12px;
@@ -162,18 +175,18 @@ div#yt-player{background:transparent}  /* placeholder div: let the status messag
 .inp{
   display:block; margin:1px 6px 1px; width:calc(100% - 12px); height:22px; padding:0 7px;
   background:rgba(255,255,255,.07); border:1px solid var(--c5); border-radius:6px;
-  color:var(--fg); font:inherit; font-size:11.5px;
+  color:var(--fg); font:inherit; font-size:11.5px; user-select:text; -webkit-user-select:text;
 }
 .inp::placeholder{color:var(--muted)}
 .inp:focus{outline:none;border-color:var(--c1);box-shadow:0 0 0 1px var(--c1)}
 .list{position:relative;margin-right:6px}
 .row{
-  height:20px; display:flex; align-items:center; gap:6px; padding:0 8px 0 8px;
-  font-size:11.5px; color:var(--fg); cursor:pointer;
+  height:var(--row); display:flex; align-items:center; gap:6px; padding:0 8px;
+  font-size:var(--fs); color:var(--fg); cursor:pointer;
 }
 .row .lbl{flex:1;min-width:0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
 .row .lbl.mqp{text-overflow:clip}
-.row .right{flex:none;font-size:10px;opacity:.85;font-variant-numeric:tabular-nums}
+.row .right{flex:none;font-size:.87em;opacity:.85;font-variant-numeric:tabular-nums}
 .row.sel{background:linear-gradient(90deg,var(--c1),var(--c5));color:var(--hl-fg);font-weight:700;border-radius:3px}
 .row.info{color:var(--muted);cursor:default;font-style:italic}
 .row.now:not(.sel) .lbl{color:var(--c3)}
@@ -183,7 +196,7 @@ div#yt-player{background:transparent}  /* placeholder div: let the status messag
 .sb{position:absolute;right:2px;top:2px;bottom:2px;width:3px;border-radius:2px;background:rgba(255,255,255,.08)}
 .sb[hidden]{display:none}
 .sb i{position:absolute;left:0;right:0;border-radius:2px;background:linear-gradient(var(--c1),var(--c2))}
-.textview{position:absolute;inset:0 0 14px 0;overflow-y:auto;padding:4px 10px;font-size:10.5px;line-height:1.35;scrollbar-width:thin}
+.textview{position:absolute;inset:0 0 14px 0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:4px 10px;font-size:10.5px;line-height:1.35;scrollbar-width:thin;user-select:text;-webkit-user-select:text}
 .textview p{margin:0 0 4px}
 .textview h3{margin:0 0 3px;font-size:11.5px;color:var(--c1)}
 .hint{position:absolute;left:0;right:0;bottom:0;height:14px;font-size:9.5px;text-align:center;color:var(--muted);background:var(--screen)}
@@ -219,19 +232,24 @@ div#yt-player{background:transparent}  /* placeholder div: let the status messag
 .np.scrub .np-hint{color:var(--c3)}
 
 /* ============================================================
-   CLICK WHEEL
+   CLICK WHEEL  (drawn at 180px, scaled by --wscale on phones)
    ============================================================ */
-.wheel{position:relative;width:180px;height:180px;margin:16px auto 0;border-radius:50%;touch-action:none;user-select:none;-webkit-user-select:none}
-.wheel svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
-.wheel .disc{fill:var(--wheel);stroke:var(--wheel-stroke);stroke-width:1.5}
+.wheel-area{flex:none;display:flex;align-items:center;justify-content:center;padding-top:16px}
+.wheel-wrap{position:relative;width:var(--wheel);height:var(--wheel)}
+.wheel{position:absolute;left:0;top:0;width:180px;height:180px;border-radius:50%;touch-action:none;user-select:none;-webkit-user-select:none;
+  transform:scale(var(--wscale));transform-origin:0 0}
+/* v1.2: only the background ring SVG fills the wheel (icons inside buttons are no longer pinned top-left) */
+#wheelSvg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.wheel .disc{fill:var(--wheel-bg);stroke:var(--wheel-stroke);stroke-width:1.5}
 .wheel .inner{fill:none;stroke:rgba(255,255,255,.06);stroke-width:1}
 .wheel .arc{fill:none;stroke-width:7;stroke-linecap:round;opacity:.95;filter:drop-shadow(0 0 3px currentColor)}
 .wheel .ind{position:absolute;left:50%;top:50%;width:7px;height:7px;margin:-3.5px;border-radius:50%;background:#fff;box-shadow:0 0 6px var(--c1);
   transform:rotate(var(--ang,-90deg)) translateX(68px);opacity:0;transition:opacity .2s;pointer-events:none}
 .wheel.dragging .ind{opacity:.9}
 .z{position:absolute;background:transparent;border:0;padding:0;cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:14px;
-   font:inherit;font-size:11px;font-weight:700;letter-spacing:.12em;touch-action:none}
-.z svg{width:18px;height:18px}
+   font:inherit;font-size:11px;font-weight:700;letter-spacing:.12em;touch-action:none;-webkit-touch-callout:none}
+/* v1.2: icons centred inside their button */
+.z svg{position:static;display:block;width:18px;height:18px;pointer-events:none}
 .z-top{top:12px;left:50%;transform:translateX(-50%);width:76px;height:38px;color:var(--k1)}
 .z-right{right:8px;top:50%;transform:translateY(-50%);width:40px;height:72px;color:var(--k2)}
 .z-bottom{bottom:10px;left:50%;transform:translateX(-50%);width:76px;height:38px;color:var(--k3)}
@@ -241,20 +259,50 @@ div#yt-player{background:transparent}  /* placeholder div: let the status messag
   position:absolute; left:50%; top:50%; width:62px; height:62px; margin:-31px 0 0 -31px; border-radius:50%;
   background:radial-gradient(circle at 40% 35%, rgba(255,255,255,.10), rgba(255,255,255,0) 60%), var(--center);
   border:3px solid var(--ring); box-shadow:0 0 12px -2px var(--ring), inset 0 2px 6px rgba(0,0,0,.4);
-  cursor:pointer; display:flex; align-items:center; justify-content:center; padding:0;
+  cursor:pointer; display:flex; align-items:center; justify-content:center; padding:0; -webkit-touch-callout:none;
 }
 .z-center .dot{width:9px;height:9px;border-radius:50%;background:var(--dot);box-shadow:0 0 8px var(--dot)}
 .z-center:active{transform:scale(.96)}
 .wheel button:focus-visible{outline:2px solid var(--glow);outline-offset:1px}
 
 /* ============================================================
+   PHONE / iPHONE FIT  (class "phone" + size variables set by Layout script)
+   The device fills the visible screen, respects the notch / home-indicator
+   safe areas, uses 16px inputs (stops iOS auto-zoom) and larger touch rows.
+   ============================================================ */
+html.phone, html.phone body{height:100%;overflow:hidden;overscroll-behavior:none}
+html.phone body{padding:0;gap:0;justify-content:flex-start;min-height:0;position:fixed;inset:0}
+html.phone .foot{display:none}
+html.phone .banner{position:fixed;left:8px;right:8px;width:auto;top:calc(env(safe-area-inset-top) + 8px)}
+html.phone .device{
+  width:100%; height:var(--app-h,100dvh); border-radius:0; border-width:0;
+  padding:calc(env(safe-area-inset-top) + 8px) calc(env(safe-area-inset-right) + 8px) calc(env(safe-area-inset-bottom) + 8px) calc(env(safe-area-inset-left) + 8px);
+  box-shadow:inset 0 0 0 1.5px var(--glow), inset 0 0 22px -6px var(--glow), inset 0 0 0 3px var(--hair);
+}
+html.phone .wheel-area{flex:1;min-height:0;padding-top:0}
+html.phone .hdr{height:24px;font-size:12.5px}
+html.phone .inp{height:30px;font-size:16px;margin:2px 6px}
+html.phone .np{gap:5px;padding:6px 12px}
+html.phone .np-title{height:20px;font-size:15px}
+html.phone .np-artist{font-size:12.5px}
+html.phone .np-times,html.phone .np-row,html.phone .np-hint{font-size:11.5px}
+html.phone .np-bar{height:18px}
+html.phone .np-bar::before,html.phone .np-bar .fill{top:7px}
+html.phone .np-bar .knob{top:3px;width:12px;height:12px;margin-left:-6px}
+html.phone .count,html.phone .stl{font-size:11px}
+html.phone .thumb{height:42px}
+html.phone .toast{font-size:12.5px;padding:6px 10px}
+html.phone .textview{font-size:12.5px}
+html.phone .textview h3{font-size:13.5px}
+html.phone .hint{font-size:11px;height:16px}
+html.phone .textview{bottom:16px}
+
+/* ============================================================
    RESPONSIVE + MOTION
    ============================================================ */
-@media (min-width:768px) and (min-height:760px){ .device{margin:10px 0} }
-@media (max-width:330px){ body{padding:8px 4px} .device{width:308px} }
 @media (prefers-reduced-motion: reduce){
   .view,.toast,.wheel .ind{transition:none}
-  .txt.mq{animation:none}
+  .txt.mq,.artframe.tapme{animation:none}
   .batt.loading i{animation:none;transform:scaleX(.5)}
 }
 </style>
@@ -278,8 +326,8 @@ div#yt-player{background:transparent}  /* placeholder div: let the status messag
         <span class="batt idle" id="batt" role="img" aria-label="Player status: loading"><i></i></span>
       </header>
       <div class="stage">
-        <!-- The official YouTube player lives here, always visible at 200x200 CSS px (album art / video panel). -->
-        <div class="artframe">
+        <!-- The official YouTube player lives here, always visible at >= 200x200 CSS px (album art / video panel). -->
+        <div class="artframe" id="artframe">
           <div class="art-ph" id="artMsg">Loading YouTube player…</div>
           <div id="yt-player"></div>
         </div>
@@ -296,23 +344,27 @@ div#yt-player{background:transparent}  /* placeholder div: let the status messag
     </div>
   </div>
 
-  <div class="wheel" id="wheel" role="group" aria-label="Click wheel. Drag around the ring to scroll.">
-    <svg viewBox="0 0 180 180" aria-hidden="true" focusable="false" id="wheelSvg">
-      <circle class="disc" cx="90" cy="90" r="88"></circle>
-      <circle class="inner" cx="90" cy="90" r="64"></circle>
-    </svg>
-    <span class="ind" aria-hidden="true"></span>
-    <button type="button" class="z z-top" data-zone="menu" aria-label="Menu: go back. Long press for main menu">MENU</button>
-    <button type="button" class="z z-right" data-zone="next" aria-label="Next track. Long press to seek forward 10 seconds">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 6l8 6-8 6V6zm8 0l8 6-8 6V6zm8 0h2v12h-2z"/></svg>
-    </button>
-    <button type="button" class="z z-bottom" data-zone="play" aria-label="Play or pause">
-      <svg viewBox="0 0 28 24" aria-hidden="true"><path fill="currentColor" d="M3 5l9 7-9 7V5zm13 0h3v14h-3zm6 0h3v14h-3z"/></svg>
-    </button>
-    <button type="button" class="z z-left" data-zone="prev" aria-label="Previous track. Long press to seek back 10 seconds">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M20 6l-8 6 8 6V6zm-8 0l-8 6 8 6V6zM2 6h2v12H2z"/></svg>
-    </button>
-    <button type="button" class="z-center" data-zone="center" aria-label="Select"><span class="dot"></span></button>
+  <div class="wheel-area" id="wheelArea">
+    <div class="wheel-wrap">
+      <div class="wheel" id="wheel" role="group" aria-label="Click wheel. Drag around the ring to scroll.">
+        <svg viewBox="0 0 180 180" aria-hidden="true" focusable="false" id="wheelSvg">
+          <circle class="disc" cx="90" cy="90" r="88"></circle>
+          <circle class="inner" cx="90" cy="90" r="64"></circle>
+        </svg>
+        <span class="ind" aria-hidden="true"></span>
+        <button type="button" class="z z-top" data-zone="menu" aria-label="Menu: go back. Long press for main menu">MENU</button>
+        <button type="button" class="z z-right" data-zone="next" aria-label="Next track. Long press to seek forward 10 seconds">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 6l8 6-8 6V6zm8 0l8 6-8 6V6zm8 0h2v12h-2z"/></svg>
+        </button>
+        <button type="button" class="z z-bottom" data-zone="play" aria-label="Play or pause">
+          <svg viewBox="0 0 28 24" aria-hidden="true"><path fill="currentColor" d="M3 5l9 7-9 7V5zm13 0h3v14h-3zm6 0h3v14h-3z"/></svg>
+        </button>
+        <button type="button" class="z z-left" data-zone="prev" aria-label="Previous track. Long press to seek back 10 seconds">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M20 6l-8 6 8 6V6zm-8 0l-8 6 8 6V6zM2 6h2v12H2z"/></svg>
+        </button>
+        <button type="button" class="z-center" data-zone="center" aria-label="Select"><span class="dot"></span></button>
+      </div>
+    </div>
   </div>
 </main>
 
@@ -327,6 +379,7 @@ div#yt-player{background:transparent}  /* placeholder div: let the status messag
   /* ==========================================================
      CONFIG
      ========================================================== */
+  const APP_VERSION = '1.2 iPhone Edition';
   // Demo queue — REPLACEABLE PLACEHOLDERS. Swap these video IDs for any embeddable
   // videos you like. If one is blocked from embedding it is skipped automatically.
   const DEMO_TRACKS = [
@@ -337,15 +390,17 @@ div#yt-player{background:transparent}  /* placeholder div: let the status messag
     { id: '9bZkp7q19f0', title: 'Gangnam Style', channel: 'officialpsy' }
   ];
   const THEMES = [
-    { id: 'neon', name: 'Neon violet' },
-    { id: 'silver', name: 'Classic silver' },
-    { id: 'midnight', name: 'Midnight' },
-    { id: 'sunset', name: 'Sunset' }
+    { id: 'neon', name: 'Neon violet', color: '#1a1238' },
+    { id: 'silver', name: 'Classic silver', color: '#d7dae1' },
+    { id: 'midnight', name: 'Midnight', color: '#0b1020' },
+    { id: 'sunset', name: 'Sunset', color: '#3a1028' }
   ];
   const SPEEDS = [0.75, 1, 1.25, 1.5, 1.75, 2];
   const SLEEP_OPTIONS = [0, 15, 30, 60];
   const VIZ_COLORS = ['--c1', '--c2', '--c3', '--c4', '--c5'];
   const VIZ_BARS = 12;
+  const IS_IOS = /iP(hone|od|ad)/.test(navigator.platform || '') || /iPhone|iPad|iPod/.test(navigator.userAgent || '') ||
+    (/Mac/.test(navigator.userAgent || '') && navigator.maxTouchPoints > 1);
 
   /* ==========================================================
      UTILS
@@ -402,7 +457,7 @@ div#yt-player{background:transparent}  /* placeholder div: let the status messag
       return (+m[1] || 0) * 86400 + (+m[2] || 0) * 3600 + (+m[3] || 0) * 60 + (+m[4] || 0);
     },
     reduced: () => { try { return window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) { return false; } },
-    vibrate(ms) { try { if (Store.state.settings.haptics && navigator.vibrate) navigator.vibrate(ms); } catch (e) { /* ignore */ } },
+    vibrate(ms) { try { if (Store.state.settings.haptics && navigator.vibrate) navigator.vibrate(ms); } catch (e) { /* ignore (iOS has no vibrate API) */ } },
     title: t => (t && t.title) || ('YouTube video ' + (t ? t.id : '')),
     artist: t => (t && t.channel) || 'YouTube',
     thumb: (id, q) => 'https://i.ytimg.com/vi/' + id + '/' + (q || 'mqdefault') + '.jpg',
@@ -471,7 +526,7 @@ div#yt-player{background:transparent}  /* placeholder div: let the status messag
     function saveNow() {
       clearTimeout(saveT); saveT = null;
       try { localStorage.setItem(KEY, JSON.stringify(state)); return true; }
-      catch (e) { UI.toast('Could not save — browser storage is full or blocked.', 'error'); return false; }
+      catch (e) { UI.toast('Could not save — browser storage is full or blocked (Private Browsing?).', 'error'); return false; }
     }
     function save() { clearTimeout(saveT); saveT = setTimeout(saveNow, 150); }
     function reset() { state = defaults(); state.settings.onboarded = true; saveNow(); }
@@ -608,7 +663,7 @@ div#yt-player{background:transparent}  /* placeholder div: let the status messag
         if (/accessNotConfigured|SERVICE_DISABLED|has not been used/i.test(all))
           throw new ApiError('disabled', 'YouTube Data API v3 is not enabled for this key\'s Google Cloud project.');
         if (/referer|referrer|ipRefererBlocked|API_KEY_HTTP_REFERRER_BLOCKED/i.test(all))
-          throw new ApiError('referrer', 'This key\'s HTTP-referrer restriction blocks this page (file:// sends none). Run from localhost or relax the restriction.');
+          throw new ApiError('referrer', 'This key\'s HTTP-referrer restriction blocks this page address. Add this site to the key\'s allowed referrers.');
         if (/playlistNotFound/i.test(reason)) throw new ApiError('notfound', 'Playlist not found or private.');
         throw new ApiError('http', 'YouTube API error (' + res.status + ').');
       }
@@ -674,10 +729,11 @@ div#yt-player{background:transparent}  /* placeholder div: let the status messag
     const ERR = {
       2: 'invalid video ID', 5: 'HTML5 player error', 100: 'video not found or private',
       101: 'the owner blocks embedding', 150: 'the owner blocks embedding',
-      153: 'embed blocked (missing referrer — run from http://localhost)'
+      153: 'embed blocked (no referrer sent)'
     };
     let player = null, ready = false, state = 'loading', track = null, pending = null;
     let recorded = false, errorStreak = 0, apiRequested = false, resolver = null, skipT = null, loadT = null;
+    let iosUnlocked = false, tapT = null;
     const subs = [];
     const on = fn => subs.push(fn);
     function setState(s) { if (state === s) return; state = s; subs.forEach(f => { try { f(s); } catch (e) { /* ignore */ } }); }
@@ -701,13 +757,22 @@ div#yt-player{background:transparent}  /* placeholder div: let the status messag
     }
     function create() {
       if (player) return;
-      const vars = { playsinline: 1, rel: 0, modestbranding: 1, iv_load_policy: 3, enablejsapi: 1 };
-      if (/^https?:$/.test(location.protocol)) vars.origin = location.origin;
+      // We create the iframe ourselves so it always carries referrerpolicy="strict-origin-when-cross-origin".
+      // YouTube needs a referrer (Error 153 otherwise); file:// pages cannot provide one.
+      const q = new URLSearchParams({ enablejsapi: '1', playsinline: '1', rel: '0', iv_load_policy: '3' });
+      if (/^https?:$/.test(location.protocol)) { q.set('origin', location.origin); q.set('widget_referrer', location.href.split('#')[0]); }
+      const host = document.getElementById('yt-player');
+      const frame = document.createElement('iframe');
+      frame.id = 'yt-player';
+      frame.width = '200'; frame.height = '200';
+      frame.title = 'YouTube video player';
+      frame.src = 'https://www.youtube.com/embed/?' + q.toString();
+      frame.setAttribute('referrerpolicy', 'strict-origin-when-cross-origin');
+      frame.setAttribute('allow', 'autoplay; encrypted-media; picture-in-picture; web-share');
+      frame.setAttribute('allowfullscreen', '');
+      if (host) host.replaceWith(frame);
       try {
-        player = new YT.Player('yt-player', {
-          width: '200', height: '200', playerVars: vars,
-          events: { onReady, onStateChange, onError }
-        });
+        player = new YT.Player(frame, { events: { onReady, onStateChange, onError } });
       } catch (e) { setState('error'); UI.toast('The YouTube player failed to start.', 'error'); }
     }
     function onReady() {
@@ -721,13 +786,25 @@ div#yt-player{background:transparent}  /* placeholder div: let the status messag
         else setState('idle');
       }
     }
+    /* iOS Safari only lets the very first playback start from a tap ON the YouTube player.
+       If a play request doesn't start within a few seconds, ask the user to tap the video once. */
+    function watchIOS() {
+      if (!IS_IOS || iosUnlocked) return;
+      clearTimeout(tapT);
+      tapT = setTimeout(() => {
+        if (state !== 'playing' && state !== 'buffering' && state !== 'error') {
+          UI.tapHint(true);
+          UI.toast('iPhone: tap the video once to start playback. After that the wheel controls everything.', '', 7000);
+        }
+      }, 2500);
+    }
     function doLoad({ track: t, autoplay, start }) {
       track = t; recorded = false;
       const opts = { videoId: t.id, startSeconds: Math.max(0, start || 0) };
       try { autoplay ? player.loadVideoById(opts) : player.cueVideoById(opts); } catch (e) { /* ignore */ }
       setState(autoplay ? 'loading' : 'ready');
       clearTimeout(loadT);
-      if (autoplay) loadT = setTimeout(() => { if (state === 'loading') setState('ready'); }, 6000);
+      if (autoplay) { loadT = setTimeout(() => { if (state === 'loading') setState('ready'); }, 6000); watchIOS(); }
       MediaSessionBridge.update(t);
       UI.refresh();
     }
@@ -747,7 +824,8 @@ div#yt-player{background:transparent}  /* placeholder div: let the status messag
       const S = window.YT.PlayerState;
       switch (e.data) {
         case S.PLAYING:
-          clearTimeout(loadT); errorStreak = 0; setState('playing'); enrich();
+          clearTimeout(loadT); clearTimeout(tapT); iosUnlocked = true; UI.tapHint(false);
+          errorStreak = 0; setState('playing'); enrich();
           try { const r = Store.state.settings.speed; if (player.getPlaybackRate() !== r) player.setPlaybackRate(r); } catch (err) { /* ignore */ }
           if (!recorded && track) { recorded = true; Store.addRecent(track); }
           break;
@@ -763,14 +841,27 @@ div#yt-player{background:transparent}  /* placeholder div: let the status messag
     function onError(e) {
       const code = e && e.data;
       if (resolver) { resolver.fail(code); return; }
-      clearTimeout(loadT);
+      clearTimeout(loadT); clearTimeout(tapT); UI.tapHint(false);
       setState('error');
+      if (code === 153) {
+        errorStreak = 0; clearTimeout(skipT);
+        if (location.protocol === 'file:') {
+          // Every track would fail the same way, so don't skip through the queue.
+          const ban = document.getElementById('fileBanner'); if (ban) ban.hidden = false;
+          UI.setArtMessage('YouTube needs this page served over http(s). Run: python -m http.server 8000 in this folder, then open http://localhost:8000');
+          UI.toast('Playback blocked: opened as a local file. Serve it over http(s) (see banner).', 'error', 8000);
+          return;
+        }
+        UI.toast('YouTube rejected the embed (Error 153: no referrer). A content blocker, proxy or Referrer-Policy may be stripping it. Skipping\u2026', 'error', 5000);
+        skipT = setTimeout(() => App.next({ auto: true }), 2500);
+        return;
+      }
       errorStreak++;
       const name = track ? Utils.title(track) : 'This video';
       UI.toast('Can\u2019t play \u201C' + name + '\u201D: ' + (ERR[code] || 'playback error') + '. Skipping\u2026', 'error', 3500);
       if (errorStreak >= Math.max(1, Queue.length())) {
         errorStreak = 0;
-        setTimeout(() => UI.toast('No track in the queue could be embedded here. Try other links' + (location.protocol === 'file:' ? ' or run from http://localhost.' : '.'), 'error', 6000), 3600);
+        setTimeout(() => UI.toast('No track in the queue could be embedded here. Try other links.', 'error', 6000), 3600);
         return;
       }
       clearTimeout(skipT);
@@ -807,7 +898,7 @@ div#yt-player{background:transparent}  /* placeholder div: let the status messag
     return {
       on, loadApi,
       load(t, autoplay, start) { clearTimeout(skipT); if (!ready) { pending = { track: t, autoplay, start }; track = t; UI.refresh(); return; } doLoad({ track: t, autoplay, start }); },
-      play() { if (!ready) { UI.toast('The YouTube player is still loading…'); return; } safe(() => player.playVideo()); },
+      play() { if (!ready) { UI.toast('The YouTube player is still loading…'); return; } safe(() => player.playVideo()); watchIOS(); },
       pause() { safe(() => player.pauseVideo()); },
       toggle() { (state === 'playing' || state === 'buffering') ? this.pause() : this.play(); },
       seekTo(s, ahead) { safe(() => player.seekTo(Math.max(0, s), ahead !== false)); },
@@ -958,9 +1049,10 @@ div#yt-player{background:transparent}  /* placeholder div: let the status messag
     let sleepEnd = 0, sleepT = null;
     return {
       applyTheme(id) {
-        if (!THEMES.some(t => t.id === id)) id = 'neon';
-        document.documentElement.setAttribute('data-theme', id);
-        Store.state.settings.theme = id; Store.save();
+        const th = THEMES.find(t => t.id === id) || THEMES[0];
+        document.documentElement.setAttribute('data-theme', th.id);
+        const meta = document.querySelector('meta[name="theme-color"]'); if (meta) meta.setAttribute('content', th.color);
+        Store.state.settings.theme = th.id; Store.save();
       },
       setSpeed(r) { Store.state.settings.speed = r; Store.save(); PlayerController.setRate(r); },
       setSleep(min) {
@@ -979,7 +1071,7 @@ div#yt-player{background:transparent}  /* placeholder div: let the status messag
           const a = Utils.el('a', { href: url, download: 'ipod-neo-backup-' + new Date().toISOString().slice(0, 10) + '.json' });
           document.body.appendChild(a); a.click(); a.remove();
           setTimeout(() => URL.revokeObjectURL(url), 3000);
-          UI.toast('Backup downloaded (API key is not included).');
+          UI.toast(IS_IOS ? 'Backup ready — choose \u201CDownload\u201D, it saves to Files \u203A Downloads.' : 'Backup downloaded (API key is not included).');
         } catch (e) { UI.toast('Export failed in this browser.', 'error'); }
       },
       importLibrary() {
@@ -1055,7 +1147,6 @@ div#yt-player{background:transparent}  /* placeholder div: let the status messag
       if (!tracks || !tracks.length) { UI.toast('Nothing to play here yet.'); return; }
       Store.state.queue.shuffle = !!shuffle;
       const first = Queue.add(tracks, 'replace');
-      Queue.reinit();
       const start = shuffle ? Queue.items()[Math.floor(Math.random() * Queue.length())].uid : first;
       Store.state.queue.current = start;
       Queue.reinit();
@@ -1116,6 +1207,18 @@ div#yt-player{background:transparent}  /* placeholder div: let the status messag
       } catch (e) {
         UI.toast((e && e.message) || 'Import failed.', 'error', 4500);
       } finally { App.busy = false; UI.refreshChrome(); }
+    },
+    async pasteFromClipboard(entry) {
+      try {
+        const txt = await navigator.clipboard.readText();
+        if (!txt) { UI.toast('Clipboard is empty.'); return; }
+        entry.inputValue = txt.trim();
+        if (entry.inputEl) entry.inputEl.value = entry.inputValue;
+        Router.refresh();
+      } catch (e) {
+        UI.toast('Paste blocked — long-press the text box and choose Paste.', 'error');
+        if (entry.inputEl) entry.inputEl.focus();
+      }
     }
   };
 
@@ -1187,11 +1290,12 @@ div#yt-player{background:transparent}  /* placeholder div: let the status messag
       title: 'Welcome', type: 'text',
       paras: [
         { h: 'Welcome to iPod Neo' },
-        '1 \u00B7 Spin the wheel (or \u2191/\u2193, mouse wheel) to move. Center / Enter selects. MENU / Esc goes back.',
+        '1 \u00B7 Spin the wheel (or \u2191/\u2193, mouse wheel) to move. Tap a row or press the center to select. MENU goes back.',
         '2 \u00B7 No key needed: open Add by Link and paste any YouTube or YouTube Music link, playlist or ID.',
         '3 \u00B7 Optional: add a YouTube Data API key in Settings to unlock Search.',
+        IS_IOS ? 'iPhone tip: tap the video once the first time to start sound. Use Share \u203A Add to Home Screen for full-screen mode.' : '',
         { h: 'Press center to start the demo mix \u25B6' }
-      ],
+      ].filter(Boolean),
       hint: 'Center \u25B6 start \u00B7 Menu \u25C0 skip',
       primary: () => { Store.state.settings.onboarded = true; Store.save(); Router.home(); App.playCurrent(); Router.push('now'); },
       onLeave: () => { Store.state.settings.onboarded = true; Store.save(); }
@@ -1219,7 +1323,7 @@ div#yt-player{background:transparent}  /* placeholder div: let the status messag
       }
       return {
         title: 'Search', type: 'list', items,
-        input: { placeholder: s.apiKey ? 'Search YouTube\u2026' : 'Paste a link (no key set)', label: 'Search YouTube', onInput: (val, e) => Search.onInput(val, e), onSubmit: (val, e) => { if (Search.looksLikeLink(val.trim())) App.importLink(val.trim(), 'play'); else Search.run(val, e, true); } }
+        input: { placeholder: s.apiKey ? 'Search YouTube\u2026' : 'Paste a link (no key set)', label: 'Search YouTube', enterkey: 'search', onInput: (val, e) => Search.onInput(val, e), onSubmit: (val, e) => { if (Search.looksLikeLink(val.trim())) App.importLink(val.trim(), 'play'); else Search.run(val, e, true); } }
       };
     },
 
@@ -1234,13 +1338,14 @@ div#yt-player{background:transparent}  /* placeholder div: let the status messag
       const go = mode => () => { if (!v) { UI.toast('Paste a link first.'); if (entry.inputEl) entry.inputEl.focus(); return; } App.importLink(v, mode); };
       const items = [
         { info: true, label: status },
+        { label: 'Paste from clipboard', right: '\u2398', action: () => App.pasteFromClipboard(entry) },
         { label: 'Play now', right: '\u25B6', action: go('play') },
         { label: 'Play next', action: go('next') },
         { label: 'Add to queue', action: go('end') },
         { label: 'Save to library', action: go('save') }
       ];
       if (p && p.listId) items.push({ label: 'Save as new playlist', action: go('playlist') });
-      return { title: 'Add by Link', type: 'list', items, input: { placeholder: 'youtube.com / music.youtube.com link or ID', label: 'YouTube or YouTube Music link or ID', onInput: () => Router.refresh(), onSubmit: () => go('play')() } };
+      return { title: 'Add by Link', type: 'list', items, input: { placeholder: 'youtube.com / music.youtube.com link or ID', label: 'YouTube or YouTube Music link or ID', type: 'url', enterkey: 'go', onInput: () => Router.refresh(), onSubmit: () => go('play')() } };
     },
 
     library: () => {
@@ -1303,7 +1408,7 @@ div#yt-player{background:transparent}  /* placeholder div: let the status messag
       };
       return {
         title: params.mode === 'rename' ? 'Rename Playlist' : 'New Playlist', type: 'list',
-        input: { placeholder: 'Playlist name', label: 'Playlist name', onSubmit: save },
+        input: { placeholder: 'Playlist name', label: 'Playlist name', enterkey: 'done', onSubmit: save },
         items: [{ label: 'Save', right: '\u2713', action: save }, { label: 'Cancel', action: () => Router.pop() }]
       };
     },
@@ -1371,10 +1476,12 @@ div#yt-player{background:transparent}  /* placeholder div: let the status messag
           { label: 'Playback speed', right: s.speed + 'x ›', action: () => Router.push('speed') },
           { label: 'Sleep timer', right: (sl ? sl + 'm' : 'Off') + ' ›', action: () => Router.push('sleep') },
           { label: 'Music-only search', right: onOff(s.musicOnly), action: () => { s.musicOnly = !s.musicOnly; Store.save(); Router.refresh(); } },
-          { label: 'Haptics (mobile)', right: onOff(s.haptics), action: () => { s.haptics = !s.haptics; Store.save(); Router.refresh(); } },
+          { label: 'Haptics (Android)', right: onOff(s.haptics), action: () => { s.haptics = !s.haptics; Store.save(); Router.refresh(); } },
+          { label: 'iPhone tips', right: '›', action: () => Router.push('iphone') },
           { label: 'Export library (JSON)', action: () => Settings.exportLibrary() },
           { label: 'Import library (JSON)', action: () => Settings.importLibrary() },
           { label: 'Show welcome screen', action: () => Router.push('onboarding') },
+          { label: 'About (v' + APP_VERSION + ')', action: () => UI.toast('iPod Neo v' + APP_VERSION + '. Unofficial; uses YouTube\u2019s official embedded player.') },
           { label: 'Reset all data', danger: true, action: () => Router.push('confirm', { message: 'Erase library, playlists, queue and key?', confirmLabel: 'Erase everything', onConfirm: () => {
             Store.reset(); App.loadDemo(); Queue.reinit(); Settings.applyTheme('neon'); Settings.setSleep(0);
             const c = Queue.current(); if (c) PlayerController.load(c.track, false);
@@ -1402,7 +1509,7 @@ div#yt-player{background:transparent}  /* placeholder div: let the status messag
       };
       return {
         title: 'API Key', type: 'list',
-        input: { placeholder: 'YouTube Data API v3 key', label: 'YouTube Data API v3 key', type: params.show ? 'text' : 'password', onSubmit: save },
+        input: { placeholder: 'YouTube Data API v3 key', label: 'YouTube Data API v3 key', type: params.show ? 'text' : 'password', enterkey: 'done', onSubmit: save },
         items: [
           { label: 'Save key', right: '\u2713', action: save },
           { label: 'Test key', action: test },
@@ -1414,19 +1521,31 @@ div#yt-player{background:transparent}  /* placeholder div: let the status messag
       };
     },
     keyhelp: () => ({
-      title: 'Get an API Key', type: 'text', hint: 'Wheel / \u2191\u2193 scroll \u00B7 Menu back',
+      title: 'Get an API Key', type: 'text', hint: 'Swipe / wheel to scroll \u00B7 Menu back',
       paras: [
         { h: 'Free key from Google Cloud Console' },
         '1. Open console.cloud.google.com and create or select a project.',
         '2. APIs & Services \u2192 Library \u2192 enable \u201CYouTube Data API v3\u201D.',
         '3. APIs & Services \u2192 Credentials \u2192 Create credentials \u2192 API key.',
-        '4. Recommended: restrict it to YouTube Data API v3 and an HTTP referrer such as http://localhost:8000/* (referrer-restricted keys do not work from file://).',
+        '4. Recommended: restrict it to YouTube Data API v3 and to the HTTP referrer of the site you open this app from (e.g. https://your-site/*).',
         '5. Paste it on the API Key screen, press Test key, then Save key.',
         'The key stays in this browser\u2019s localStorage, is never logged and is excluded from exports. Quota: 10,000 units/day; one search \u2248 100 units.'
       ]
     }),
+    iphone: () => ({
+      title: 'iPhone Tips', type: 'text', hint: 'Swipe / wheel to scroll \u00B7 Menu back',
+      paras: [
+        { h: 'Using iPod Neo on iPhone' },
+        'Open it from a web address (https://\u2026 or http://your-PC-IP:8000), not from the Files app \u2014 YouTube blocks local files.',
+        'Full screen: in Safari tap Share \u203A Add to Home Screen, then launch it from the icon.',
+        'First play: iOS requires one tap directly on the video. After that, the wheel and buttons control playback.',
+        'Volume: iOS ignores web volume control \u2014 use the iPhone side buttons. The wheel volume bar is cosmetic on iPhone.',
+        'Lock screen / background: iOS pauses embedded YouTube video when the screen locks or Safari is in the background (YouTube Premium background play does not apply to embeds).',
+        'Haptics: iOS Safari has no vibration API, so wheel clicks are silent.'
+      ]
+    }),
     ytmusic: () => ({
-      title: 'YouTube Music', type: 'text', hint: 'Wheel / \u2191\u2193 scroll \u00B7 Menu back',
+      title: 'YouTube Music', type: 'text', hint: 'Swipe / wheel to scroll \u00B7 Menu back',
       paras: [
         { h: 'Supported via link & ID import' },
         'YouTube Music is supported via link and ID import \u2014 not through its private API (there is no official YouTube Music API).',
@@ -1466,7 +1585,7 @@ div#yt-player{background:transparent}  /* placeholder div: let the status messag
     const make = (id, params) => ({ id, params: params || {}, sel: -1, top: 0, def: null, view: null, inputEl: null, inputValue: '', navigated: false });
     const top = () => stack[stack.length - 1];
     function build(entry) { const fn = Screens[entry.id] || Screens.main; entry.def = fn(entry.params, entry); return entry.def; }
-    function leave() { const t = top(); if (t && t.def && t.def.onLeave) t.def.onLeave(); if (t && t.id === 'now') UI.setScrub(false); }
+    function leave() { const t = top(); if (t && t.def && t.def.onLeave) t.def.onLeave(); if (t && t.id === 'now') UI.setScrub(false); if (document.activeElement && document.activeElement.tagName === 'INPUT') document.activeElement.blur(); }
     return {
       top, build,
       start() { stack.length = 0; stack.push(make('main')); UI.mount(top(), 0); if (!Store.state.settings.onboarded) { stack.push(make('onboarding')); UI.mount(top(), 0); } },
@@ -1493,12 +1612,83 @@ div#yt-player{background:transparent}  /* placeholder div: let the status messag
   })();
 
   /* ==========================================================
+     LAYOUT (phone / iPhone fit)
+     On narrow or short touch screens the device fills the visible viewport.
+     The YouTube player keeps >= 200x200 CSS px (grows on bigger phones),
+     the menu shows 6 rows, and the click wheel takes the remaining space.
+     ========================================================== */
+  const Layout = (() => {
+    let raf = 0, lastW = 0, lastH = 0;
+    const root = document.documentElement;
+    function viewport() {
+      const vv = window.visualViewport;
+      return { W: Math.round(vv ? vv.width : window.innerWidth), H: Math.round(vv ? vv.height : window.innerHeight) };
+    }
+    function fit() {
+      raf = 0;
+      // While the on-screen keyboard is open, keep the current layout (prevents squashing).
+      const a = document.activeElement;
+      if (a && a.tagName === 'INPUT' && root.classList.contains('phone')) return;
+      const { W, H } = viewport();
+      if (W === lastW && H === lastH) return;
+      lastW = W; lastH = H;
+      const coarse = window.matchMedia && matchMedia('(pointer: coarse)').matches;
+      const phone = W <= 540 || (coarse && H <= 760);
+      root.classList.toggle('phone', phone);
+      if (!phone) {
+        ['--art', '--row', '--wheel', '--wscale', '--fs', '--screen-h', '--app-h'].forEach(v => root.style.removeProperty(v));
+        return;
+      }
+      root.style.setProperty('--app-h', H + 'px');
+      const dev = document.getElementById('device');
+      const cs = getComputedStyle(dev);
+      const padY = parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom);
+      const padX = parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight);
+      const innerW = W - padX, innerH = H - padY;
+      const bezel = 14;                                   // bezel padding + border
+      const sideMin = 58;                                 // side column (thumb / visualizer)
+      let row = innerH >= 700 ? 30 : innerH >= 600 ? 26 : 22;
+      let art = Utils.clamp(Math.floor(Math.min(innerW - bezel - 8 - 4 - sideMin - 4, innerH * 0.34)), 200, 320);
+      let wheel;
+      for (let i = 0; i < 4; i++) {
+        const panel = 6 * row + 8 + (row >= 26 ? 8 : 0);
+        const screenH = 24 + 4 + art + 4 + 4 + panel;
+        const free = innerH - (screenH + bezel) - 10;
+        wheel = Math.min(free, innerW * 0.78, 300);
+        if (wheel >= 150 || (art === 200 && row === 20)) {
+          root.style.setProperty('--screen-h', screenH + 'px');
+          break;
+        }
+        if (art > 200) art = Math.max(200, art - 30); else row = Math.max(20, row - 3);
+        if (i === 3) root.style.setProperty('--screen-h', screenH + 'px');
+      }
+      wheel = Math.max(120, Math.floor(wheel));
+      root.style.setProperty('--art', art + 'px');
+      root.style.setProperty('--row', row + 'px');
+      root.style.setProperty('--fs', (row >= 26 ? 14 : row >= 22 ? 12.5 : 11.5) + 'px');
+      root.style.setProperty('--wheel', wheel + 'px');
+      root.style.setProperty('--wscale', (wheel / 180).toFixed(4));
+    }
+    function schedule() { if (!raf) raf = requestAnimationFrame(fit); }
+    return {
+      init() {
+        fit();
+        window.addEventListener('resize', schedule);
+        window.addEventListener('orientationchange', () => { lastW = 0; setTimeout(schedule, 250); });
+        if (window.visualViewport) window.visualViewport.addEventListener('resize', schedule);
+        document.addEventListener('focusout', () => setTimeout(() => { lastW = 0; schedule(); window.scrollTo(0, 0); }, 120));
+      },
+      refit() { lastW = 0; schedule(); }
+    };
+  })();
+
+  /* ==========================================================
      UI RENDERERS (header, side panel, lists, now playing, toast, visualizer)
      ========================================================== */
   const UI = (() => {
     const $ = id => document.getElementById(id);
     const { el } = Utils;
-    let panel, toastEl, toastT = null, currentView = null, now = null, scrub = false, lastThumb = '';
+    let panel, toastEl, toastT = null, currentView = null, now = null, scrub = false, lastThumb = '', iosVolHint = false;
     const vizBars = [], vizH = [];
     let lastViz = 0;
     const ICON = {   // static, trusted SVG markup only
@@ -1541,6 +1731,7 @@ div#yt-player{background:transparent}  /* placeholder div: let the status messag
       }
       currentView = v; entry.view = v;
       afterRender(entry);
+      // Auto-focus inputs on desktop only; on touch screens the keyboard opens when the user taps the box.
       if (entry.inputEl && !matchMedia('(pointer: coarse)').matches) setTimeout(() => { try { entry.inputEl.focus({ preventScroll: true }); } catch (e) { /* ignore */ } }, 60);
       refreshChrome();
     }
@@ -1551,13 +1742,14 @@ div#yt-player{background:transparent}  /* placeholder div: let the status messag
       if (def.type === 'text') {
         const tv = el('div', { class: 'textview', tabindex: '-1' });
         def.paras.forEach(p => tv.appendChild(typeof p === 'string' ? el('p', { text: p }) : el('h3', { text: p.h })));
+        if (def.primary) tv.addEventListener('click', () => def.primary());
         entry.textEl = tv;
         return el('div', { class: 'view' }, tv, el('div', { class: 'hint', text: def.hint || 'Center select \u00B7 Menu back' }));
       }
       const view = el('div', { class: 'view' });
       entry.inputEl = null;
       if (def.input) {
-        const inp = el('input', { class: 'inp', type: def.input.type || 'text', placeholder: def.input.placeholder || '', 'aria-label': def.input.label || def.input.placeholder || 'Input', autocomplete: 'off', autocapitalize: 'off', spellcheck: 'false', enterkeyhint: 'go' });
+        const inp = el('input', { class: 'inp', type: def.input.type || 'text', placeholder: def.input.placeholder || '', 'aria-label': def.input.label || def.input.placeholder || 'Input', autocomplete: 'off', autocapitalize: 'off', autocorrect: 'off', spellcheck: 'false', enterkeyhint: def.input.enterkey || 'go' });
         inp.value = entry.inputValue;
         inp.addEventListener('input', () => {
           entry.inputValue = inp.value; entry.navigated = false;
@@ -1568,6 +1760,7 @@ div#yt-player{background:transparent}  /* placeholder div: let the status messag
             e.preventDefault(); e.stopPropagation();
             if (entry.navigated) Router.select();
             else { const d = entry.def.input; if (d && d.onSubmit) d.onSubmit(inp.value, entry); else Router.select(); }
+            if (matchMedia('(pointer: coarse)').matches) inp.blur();   // close the iPhone keyboard
           } else if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
             e.preventDefault(); e.stopPropagation(); entry.navigated = true; Router.step(e.key === 'ArrowDown' ? 1 : -1);
           } else if (e.key === 'Escape') {
@@ -1624,7 +1817,7 @@ div#yt-player{background:transparent}  /* placeholder div: let the status messag
       const sb = entry.sbEl;
       if (items.length > vis) {
         sb.hidden = false;
-        sb.style.top = (def.input ? 26 : 2) + 'px';
+        sb.style.top = (def.input && entry.inputEl ? entry.inputEl.offsetHeight + 4 : 2) + 'px';
         const h = Math.max(10, (vis / items.length) * 100), t = (entry.top / items.length) * 100;
         sb.firstChild.style.height = h + '%'; sb.firstChild.style.top = t + '%';
       } else sb.hidden = true;
@@ -1655,7 +1848,7 @@ div#yt-player{background:transparent}  /* placeholder div: let the status messag
       if (i < 0 || i >= items.length) return;
       entry.sel = i; renderRows(entry);
     }
-    function textScroll(entry, d) { if (entry.textEl) entry.textEl.scrollTop += d * 18; }
+    function textScroll(entry, d) { if (entry.textEl) entry.textEl.scrollTop += d * 22; }
 
     /* ---------- Now Playing ---------- */
     function buildNow() {
@@ -1713,13 +1906,14 @@ div#yt-player{background:transparent}  /* placeholder div: let the status messag
         [sl ? 'z' + sl + 'm' : 'z', !!sl, sl ? 'Sleep in ' + sl + ' minutes' : 'Sleep off']
       ];
       now.modes.replaceChildren(...chips.map(([tx, on, lab]) => el('span', { class: on ? 'on' : '', title: lab, text: tx })));
-      now.hint.textContent = scrub ? 'SCRUB \u00B7 turn to seek \u00B7 center exits' : 'Wheel: volume \u00B7 Center: scrub';
+      now.hint.textContent = scrub ? 'SCRUB \u00B7 turn to seek \u00B7 center exits' : (IS_IOS ? 'Wheel: volume* \u00B7 Center: scrub' : 'Wheel: volume \u00B7 Center: scrub');
       now.v.classList.toggle('scrub', scrub);
     }
     function setVolume(v) {
       v = Utils.clamp(Math.round(v), 0, 100);
       Store.state.settings.volume = v; Store.save();
       PlayerController.setVolume(v); updateNow(); refreshChrome();
+      if (IS_IOS && !iosVolHint) { iosVolHint = true; toast('*On iPhone, use the side buttons to change volume — iOS ignores web volume control.', '', 5000); }
     }
     function nowStep(d) {
       if (scrub) { PlayerController.seekBy(d * 5); setTimeout(updateNow, 60); }
@@ -1786,12 +1980,13 @@ div#yt-player{background:transparent}  /* placeholder div: let the status messag
       toastT = setTimeout(() => { toastEl.className = 'toast'; }, ms || 2600);
     }
     function setArtMessage(msg) { const m = $('artMsg'); if (m) m.textContent = msg || ''; }
+    function tapHint(on) { const a = $('artframe'); if (a) a.classList.toggle('tapme', !!on); }
     let annT = null;
     function announce(text) { clearTimeout(annT); annT = setTimeout(() => { const s = $('sr'); if (s) s.textContent = text; }, 150); }
 
     return {
       init, mount, refreshScreen, refresh, refreshChrome, moveSel, textScroll, nowStep, setScrub,
-      toast, setArtMessage, setVolume,
+      toast, setArtMessage, setVolume, tapHint,
       get scrub() { return scrub; }
     };
   })();
@@ -1848,12 +2043,13 @@ div#yt-player{background:transparent}  /* placeholder div: let the status messag
           if (z !== 'menu') rpTimer = setInterval(() => long(z), 450);
         }, 550);
       }
-      window.addEventListener('pointermove', move);
+      window.addEventListener('pointermove', move, { passive: false });
       window.addEventListener('pointerup', up);
       window.addEventListener('pointercancel', up);
     }
     function move(e) {
       if (e.pointerId !== active) return;
+      if (e.cancelable) e.preventDefault();                      // stop iOS page scroll / bounce while spinning
       const g = geo(e);
       let d = g.a - lastAngle;
       if (d > 180) d -= 360; else if (d < -180) d += 360;
@@ -1892,9 +2088,12 @@ div#yt-player{background:transparent}  /* placeholder div: let the status messag
       // Mouse/touch presses don't steal keyboard focus (so Enter/Space keep their global meaning);
       // keyboard users can still Tab to every wheel button.
       wheel.addEventListener('mousedown', e => e.preventDefault());
+      // iOS: block page scrolling / rubber-banding when a touch starts on the wheel
+      wheel.addEventListener('touchmove', e => { if (e.cancelable) e.preventDefault(); }, { passive: false });
       // Mouse wheel over the device also scrolls
       document.getElementById('device').addEventListener('wheel', e => {
         if (e.ctrlKey) return;
+        if (e.target.closest && e.target.closest('.textview')) return;   // let long help text scroll natively
         e.preventDefault();
         const k = e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? 120 : 1;
         wAcc += e.deltaY * k;
@@ -1938,6 +2137,7 @@ div#yt-player{background:transparent}  /* placeholder div: let the status messag
     if (!Store.state.queue.items.length) App.loadDemo();       // never empty on first load
     Queue.reinit();
     Settings.applyTheme(Store.state.settings.theme);
+    Layout.init();
     UI.init();
     WheelController.init();
     Keyboard.init();
@@ -1952,7 +2152,7 @@ div#yt-player{background:transparent}  /* placeholder div: let the status messag
     window.addEventListener('online', () => { UI.toast('Back online'); PlayerController.loadApi(); UI.refresh(); });
     window.addEventListener('offline', () => { UI.toast('You are offline \u2014 playback and search need a connection.', 'error'); UI.refresh(); });
     window.addEventListener('pagehide', () => Store.saveNow());
-    document.addEventListener('visibilitychange', () => { if (document.hidden) Store.saveNow(); });
+    document.addEventListener('visibilitychange', () => { if (document.hidden) Store.saveNow(); else Layout.refit(); });
 
     if (navigator.onLine) PlayerController.loadApi();
     else { UI.setArtMessage('Offline \u2014 the YouTube player loads when you reconnect.'); UI.refreshChrome(); }
