@@ -12,7 +12,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="iPod Neo">
 <meta name="format-detection" content="telephone=no">
-<title>iPod Neo v1.2 — YouTube &amp; YouTube Music Player</title>
+<title>iPod Neo v1.3 — YouTube &amp; YouTube Music Player</title>
 <!-- Optional Google Font; system fonts are used as fallbacks if it cannot load (e.g. offline). -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -271,13 +271,16 @@ div#yt-player{background:transparent} /* placeholder: let the status text show u
    safe areas, uses 16px inputs (stops iOS auto-zoom) and larger touch rows.
    ============================================================ */
 html.phone, html.phone body{height:100%;overflow:hidden;overscroll-behavior:none}
-html.phone body{padding:0;gap:0;justify-content:flex-start;min-height:0;position:fixed;inset:0}
+html.phone body{gap:0;justify-content:flex-start;align-items:stretch;min-height:0;position:fixed;inset:0;
+  padding:calc(env(safe-area-inset-top) + 8px) calc(env(safe-area-inset-right) + 8px) calc(env(safe-area-inset-bottom) + 8px) calc(env(safe-area-inset-left) + 8px)}
 html.phone .foot{display:none}
 html.phone .banner{position:fixed;left:8px;right:8px;width:auto;top:calc(env(safe-area-inset-top) + 8px)}
+/* v1.3: rounded iPod body on phones (same rim, glow and hairline as desktop) */
 html.phone .device{
-  width:100%; height:var(--app-h,100dvh); border-radius:0; border-width:0;
-  padding:calc(env(safe-area-inset-top) + 8px) calc(env(safe-area-inset-right) + 8px) calc(env(safe-area-inset-bottom) + 8px) calc(env(safe-area-inset-left) + 8px);
-  box-shadow:inset 0 0 0 1.5px var(--glow), inset 0 0 22px -6px var(--glow), inset 0 0 0 3px var(--hair);
+  width:100%; flex:1 1 auto; min-height:0; height:auto;
+  border-radius:38px; border:3px solid var(--rim);
+  padding:12px 10px 10px;
+  box-shadow:0 0 0 1.5px var(--glow), 0 0 18px -2px var(--glow), inset 0 0 0 1px var(--hair);
 }
 html.phone .wheel-area{flex:1;min-height:0;padding-top:0}
 html.phone .hdr{height:24px;font-size:12.5px}
@@ -379,7 +382,7 @@ html.phone .textview{bottom:16px}
   /* ==========================================================
      CONFIG
      ========================================================== */
-  const APP_VERSION = '1.2 iPhone Edition';
+  const APP_VERSION = '1.3 iPhone Edition';
   // Demo queue — REPLACEABLE PLACEHOLDERS. Swap these video IDs for any embeddable
   // videos you like. If one is blocked from embedding it is skipped automatically.
   const DEMO_TRACKS = [
@@ -1639,12 +1642,12 @@ html.phone .textview{bottom:16px}
         ['--art', '--row', '--wheel', '--wscale', '--fs', '--screen-h', '--app-h'].forEach(v => root.style.removeProperty(v));
         return;
       }
-      root.style.setProperty('--app-h', H + 'px');
       const dev = document.getElementById('device');
       const cs = getComputedStyle(dev);
       const padY = parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom);
       const padX = parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight);
-      const innerW = W - padX, innerH = H - padY;
+      // device now sits inside the page padding with a rounded rim: measure its real inner box
+      const innerW = dev.clientWidth - padX, innerH = dev.clientHeight - padY;
       const bezel = 14;                                   // bezel padding + border
       const sideMin = 58;                                 // side column (thumb / visualizer)
       let row = innerH >= 700 ? 30 : innerH >= 600 ? 26 : 22;
