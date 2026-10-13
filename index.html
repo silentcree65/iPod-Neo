@@ -1,0 +1,1965 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark light">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<title>iPod Neo — YouTube &amp; YouTube Music Player</title>
+<!-- Optional Google Font; system fonts are used as fallbacks if it cannot load (e.g. offline). -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   THEMES (CSS custom properties)
+   ============================================================ */
+:root{
+  --page-bg: radial-gradient(1200px 700px at 50% -10%, #2a1760 0%, #0b0718 55%, #05030c 100%);
+  --page-fg:#e9e6ff; --page-muted:#a7a2cf;
+  --banner-bg:#2a1d05; --banner-fg:#fde7b0; --banner-bd:#fbbf24;
+}
+@media (prefers-color-scheme: light){
+  :root{
+    --page-bg: radial-gradient(1200px 700px at 50% -10%, #ffffff 0%, #ebe8f7 55%, #d9d4ee 100%);
+    --page-fg:#1c1640; --page-muted:#5b5585;
+    --banner-bg:#fff7e0; --banner-fg:#4a3200; --banner-bd:#d97706;
+  }
+}
+[data-theme="neon"]{
+  --body:#1a1238; --rim:#3b2a7a; --glow:#e879f9; --hair:#22d3ee;
+  --bezel:#0a0620; --bezel-stroke:#7c5cff; --screen:#150c33;
+  --fg:#f1ecff; --muted:#a69ed6; --hl-fg:#0a0620;
+  --c1:#22d3ee; --c2:#f472b6; --c3:#fbbf24; --c4:#4ade80; --c5:#a78bfa;
+  --k1:var(--c1); --k2:var(--c2); --k3:var(--c3); --k4:var(--c4);
+  --wheel:#120b2b; --wheel-stroke:#3b2a7a; --center:#0d0822; --ring:#fb7185; --dot:#f472b6;
+}
+[data-theme="silver"]{
+  --body:#d7dae1; --rim:#a3a9b5; --glow:#ffffff; --hair:#7dd3fc;
+  --bezel:#2a2e37; --bezel-stroke:#8b93a3; --screen:#18202e;
+  --fg:#eef3fa; --muted:#9aa7bb; --hl-fg:#0b1220;
+  --c1:#22d3ee; --c2:#f472b6; --c3:#fbbf24; --c4:#4ade80; --c5:#a78bfa;
+  --k1:#0e7490; --k2:#be185d; --k3:#b45309; --k4:#15803d;
+  --wheel:#f3f4f7; --wheel-stroke:#b9bfca; --center:#dfe2e8; --ring:#e11d48; --dot:#db2777;
+}
+[data-theme="midnight"]{
+  --body:#0b1020; --rim:#1f2a44; --glow:#38bdf8; --hair:#a78bfa;
+  --bezel:#04060e; --bezel-stroke:#334155; --screen:#070b18;
+  --fg:#e2e8f0; --muted:#8b9ab3; --hl-fg:#04060e;
+  --c1:#38bdf8; --c2:#e879f9; --c3:#facc15; --c4:#34d399; --c5:#818cf8;
+  --k1:var(--c1); --k2:var(--c2); --k3:var(--c3); --k4:var(--c4);
+  --wheel:#0a0f1e; --wheel-stroke:#1f2a44; --center:#05080f; --ring:#38bdf8; --dot:#e879f9;
+}
+[data-theme="sunset"]{
+  --body:#3a1028; --rim:#7c2d4f; --glow:#fb923c; --hair:#fde047;
+  --bezel:#1a0612; --bezel-stroke:#be185d; --screen:#220a1c;
+  --fg:#fff1e6; --muted:#d9a7b8; --hl-fg:#1a0612;
+  --c1:#fb923c; --c2:#f472b6; --c3:#fde047; --c4:#4ade80; --c5:#c084fc;
+  --k1:var(--c1); --k2:var(--c2); --k3:var(--c3); --k4:var(--c4);
+  --wheel:#2a0b1f; --wheel-stroke:#7c2d4f; --center:#1a0612; --ring:#fb7185; --dot:#fb923c;
+}
+
+/* ============================================================
+   PAGE
+   ============================================================ */
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%}
+body{
+  font-family:'Chakra Petch',system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;
+  background:var(--page-bg); background-attachment:fixed; color:var(--page-fg);
+  min-height:100vh; min-height:100dvh;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:12px; padding:12px 6px; -webkit-tap-highlight-color:transparent;
+}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+:focus-visible{outline:2px solid var(--c1);outline-offset:2px}
+.banner{
+  width:100%; max-width:560px; display:flex; align-items:flex-start; gap:8px;
+  background:var(--banner-bg); color:var(--banner-fg); border:1px solid var(--banner-bd);
+  border-radius:12px; padding:8px 10px; font-size:13px; line-height:1.4;
+}
+.banner[hidden]{display:none}
+.banner p{margin:0;flex:1}
+.banner code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12px}
+.banner a{color:inherit;font-weight:700}
+.banner button{background:none;border:0;color:inherit;font-size:16px;line-height:1;cursor:pointer;padding:2px 4px;border-radius:6px}
+.foot{margin:0;font-size:11px;color:var(--page-muted);text-align:center;max-width:320px;line-height:1.4}
+
+/* ============================================================
+   DEVICE
+   ============================================================ */
+.device{
+  position:relative; flex:none; width:308px; padding:10px 10px 16px;
+  border-radius:40px; background:
+    linear-gradient(160deg, rgba(255,255,255,.10), rgba(255,255,255,0) 40%),
+    var(--body);
+  border:3px solid var(--rim);
+  box-shadow:
+    0 0 0 1.5px var(--glow),                 /* magenta edge glow stroke */
+    0 0 26px -2px var(--glow),
+    inset 0 0 0 1px var(--hair),             /* inner cyan hairline */
+    0 24px 50px -18px rgba(0,0,0,.6);
+  user-select:none; -webkit-user-select:none;
+}
+.bezel{background:var(--bezel);border:1.5px solid var(--bezel-stroke);border-radius:14px;padding:5px}
+.screen{
+  position:relative; height:356px; background:var(--screen); border-radius:9px; overflow:hidden;
+  color:var(--fg); display:flex; flex-direction:column;
+}
+/* Header */
+.hdr{
+  flex:none; height:20px; display:flex; align-items:center; gap:6px; padding:0 7px;
+  font-size:11px; font-weight:700; letter-spacing:.02em;
+  background:linear-gradient(180deg,rgba(255,255,255,.12),rgba(255,255,255,.02));
+  border-bottom:1px solid rgba(167,139,250,.35);
+}
+.hdr .ttl{flex:1;min-width:0;text-align:center;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.hdr-state{width:12px;height:12px;display:inline-flex;color:var(--c1)}
+.hdr-state svg{width:12px;height:12px}
+.hdr-flag{font-size:9px;color:var(--c3)}
+.hdr-flag[hidden]{display:none}
+.batt{position:relative;width:20px;height:10px;border:1.5px solid currentColor;border-radius:2px;color:var(--c4);flex:none}
+.batt::after{content:"";position:absolute;right:-4px;top:2px;width:2px;height:3px;background:currentColor;border-radius:0 1px 1px 0}
+.batt i{position:absolute;inset:1px;background:currentColor;transform-origin:left center;transform:scaleX(1);border-radius:1px}
+.batt.idle{color:var(--c1)}
+.batt.loading{color:var(--c3)}
+.batt.loading i{animation:charge 1.1s steps(4) infinite}
+.batt.err{color:#f87171}
+.batt.err i{transform:scaleX(.25)}
+.batt.off{color:#f87171}
+.batt.off i{transform:scaleX(.1)}
+@keyframes charge{from{transform:scaleX(.15)}to{transform:scaleX(1)}}
+
+/* Stage: visible YouTube player (>= 200x200) + side column */
+.stage{flex:none;display:flex;gap:4px;padding:4px 4px 0}
+.artframe{
+  position:relative; flex:none; width:204px; height:204px; padding:2px; border-radius:7px;
+  background:linear-gradient(135deg,var(--c1),var(--c5) 45%,var(--c2) 75%,var(--c3));
+}
+.artframe iframe,#yt-player{display:block;position:relative;z-index:1;width:200px;height:200px;border:0;border-radius:5px;background:#000}
+div#yt-player{background:transparent}  /* placeholder div: let the status message show until the iframe replaces it */
+.art-ph{
+  position:absolute; inset:2px; z-index:0; border-radius:5px; background:#05030c;
+  display:flex; align-items:center; justify-content:center; text-align:center; padding:12px;
+  font-size:11px; color:var(--muted);
+}
+.side{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px;align-items:stretch}
+.thumb{height:30px;border-radius:4px;overflow:hidden;border:1px solid var(--c5);background:#000}
+.thumb img{display:block;width:100%;height:100%;object-fit:cover}
+.thumb img[hidden]{display:none}
+.count{font-size:9.5px;text-align:center;color:var(--muted);font-variant-numeric:tabular-nums}
+.viz{flex:1;display:flex;align-items:flex-end;gap:1px;padding:2px 1px;border-radius:4px;background:rgba(255,255,255,.04)}
+.viz i{flex:1;height:100%;transform-origin:bottom center;transform:scaleY(.06);background:var(--bc);border-radius:1px 1px 0 0;opacity:.95}
+.stl{font-size:9px;text-align:center;letter-spacing:.08em;color:var(--c1);font-weight:700}
+
+/* Panel (menus / now playing) */
+.panel{position:relative;flex:1;margin-top:4px;overflow:hidden}
+.view{position:absolute;inset:0;transition:transform .22s ease;will-change:transform}
+.view.from-right{transform:translateX(100%)}
+.view.from-left{transform:translateX(-100%)}
+.view.to-left{transform:translateX(-100%)}
+.view.to-right{transform:translateX(100%)}
+.inp{
+  display:block; margin:1px 6px 1px; width:calc(100% - 12px); height:22px; padding:0 7px;
+  background:rgba(255,255,255,.07); border:1px solid var(--c5); border-radius:6px;
+  color:var(--fg); font:inherit; font-size:11.5px;
+}
+.inp::placeholder{color:var(--muted)}
+.inp:focus{outline:none;border-color:var(--c1);box-shadow:0 0 0 1px var(--c1)}
+.list{position:relative;margin-right:6px}
+.row{
+  height:20px; display:flex; align-items:center; gap:6px; padding:0 8px 0 8px;
+  font-size:11.5px; color:var(--fg); cursor:pointer;
+}
+.row .lbl{flex:1;min-width:0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.row .lbl.mqp{text-overflow:clip}
+.row .right{flex:none;font-size:10px;opacity:.85;font-variant-numeric:tabular-nums}
+.row.sel{background:linear-gradient(90deg,var(--c1),var(--c5));color:var(--hl-fg);font-weight:700;border-radius:3px}
+.row.info{color:var(--muted);cursor:default;font-style:italic}
+.row.now:not(.sel) .lbl{color:var(--c3)}
+.row.danger:not(.sel) .lbl{color:#fca5a5}
+.txt.mq{display:inline-block;animation:mq var(--mqd,5s) linear 0.8s infinite alternate}
+@keyframes mq{0%,12%{transform:translateX(0)}88%,100%{transform:translateX(var(--mq,0))}}
+.sb{position:absolute;right:2px;top:2px;bottom:2px;width:3px;border-radius:2px;background:rgba(255,255,255,.08)}
+.sb[hidden]{display:none}
+.sb i{position:absolute;left:0;right:0;border-radius:2px;background:linear-gradient(var(--c1),var(--c2))}
+.textview{position:absolute;inset:0 0 14px 0;overflow-y:auto;padding:4px 10px;font-size:10.5px;line-height:1.35;scrollbar-width:thin}
+.textview p{margin:0 0 4px}
+.textview h3{margin:0 0 3px;font-size:11.5px;color:var(--c1)}
+.hint{position:absolute;left:0;right:0;bottom:0;height:14px;font-size:9.5px;text-align:center;color:var(--muted);background:var(--screen)}
+.toast{
+  position:absolute; left:6px; right:6px; bottom:4px; z-index:5; padding:4px 8px; border-radius:6px;
+  font-size:10.5px; line-height:1.3; background:rgba(10,6,32,.94); border:1px solid var(--c1); color:var(--fg);
+  opacity:0; transform:translateY(8px); pointer-events:none; transition:opacity .2s, transform .2s;
+}
+.toast.show{opacity:1;transform:none}
+.toast.error{border-color:#f87171}
+
+/* Now Playing */
+.np{padding:4px 9px 3px;display:flex;flex-direction:column;gap:3px}
+.np-title{height:16px;font-size:12.5px;font-weight:700;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.np-title.mqp{text-overflow:clip}
+.np-artist{font-size:10.5px;color:var(--muted);overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.np-bar{position:relative;height:12px;cursor:pointer;touch-action:none}
+.np-bar::before{content:"";position:absolute;left:0;right:0;top:4px;height:4px;border-radius:2px;background:rgba(255,255,255,.14)}
+.np-bar .fill{position:absolute;left:0;top:4px;height:4px;border-radius:2px;background:linear-gradient(90deg,var(--c1),var(--c2));width:0}
+.np-bar .knob{position:absolute;top:1px;width:10px;height:10px;margin-left:-5px;border-radius:50%;background:#fff;box-shadow:0 0 6px var(--c2);left:0}
+.np.scrub .np-bar .knob{background:var(--c3);box-shadow:0 0 8px var(--c3)}
+.np-times{display:flex;justify-content:space-between;font-size:10px;color:var(--muted);font-variant-numeric:tabular-nums}
+.np-row{display:flex;align-items:center;gap:5px;font-size:9.5px}
+.np-row svg{width:11px;height:11px;flex:none;color:var(--c4)}
+.vbar{position:relative;flex:1;height:10px;cursor:pointer;touch-action:none}
+.vbar::before{content:"";position:absolute;left:0;right:0;top:3px;height:4px;border-radius:2px;background:rgba(255,255,255,.14)}
+.vbar i{position:absolute;left:0;top:3px;height:4px;border-radius:2px;background:linear-gradient(90deg,var(--c4),var(--c1))}
+.vtxt{width:24px;text-align:right;color:var(--muted);font-variant-numeric:tabular-nums}
+.modes{display:flex;gap:3px}
+.modes span{padding:0 3px;border:1px solid rgba(255,255,255,.18);border-radius:3px;opacity:.5;line-height:12px}
+.modes span.on{opacity:1;color:var(--c3);border-color:var(--c3)}
+.np-hint{font-size:9.5px;color:var(--muted);text-align:center}
+.np.scrub .np-hint{color:var(--c3)}
+
+/* ============================================================
+   CLICK WHEEL
+   ============================================================ */
+.wheel{position:relative;width:180px;height:180px;margin:16px auto 0;border-radius:50%;touch-action:none;user-select:none;-webkit-user-select:none}
+.wheel svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.wheel .disc{fill:var(--wheel);stroke:var(--wheel-stroke);stroke-width:1.5}
+.wheel .inner{fill:none;stroke:rgba(255,255,255,.06);stroke-width:1}
+.wheel .arc{fill:none;stroke-width:7;stroke-linecap:round;opacity:.95;filter:drop-shadow(0 0 3px currentColor)}
+.wheel .ind{position:absolute;left:50%;top:50%;width:7px;height:7px;margin:-3.5px;border-radius:50%;background:#fff;box-shadow:0 0 6px var(--c1);
+  transform:rotate(var(--ang,-90deg)) translateX(68px);opacity:0;transition:opacity .2s;pointer-events:none}
+.wheel.dragging .ind{opacity:.9}
+.z{position:absolute;background:transparent;border:0;padding:0;cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:14px;
+   font:inherit;font-size:11px;font-weight:700;letter-spacing:.12em;touch-action:none}
+.z svg{width:18px;height:18px}
+.z-top{top:12px;left:50%;transform:translateX(-50%);width:76px;height:38px;color:var(--k1)}
+.z-right{right:8px;top:50%;transform:translateY(-50%);width:40px;height:72px;color:var(--k2)}
+.z-bottom{bottom:10px;left:50%;transform:translateX(-50%);width:76px;height:38px;color:var(--k3)}
+.z-left{left:8px;top:50%;transform:translateY(-50%);width:40px;height:72px;color:var(--k4)}
+.z:active{filter:brightness(1.35)}
+.z-center{
+  position:absolute; left:50%; top:50%; width:62px; height:62px; margin:-31px 0 0 -31px; border-radius:50%;
+  background:radial-gradient(circle at 40% 35%, rgba(255,255,255,.10), rgba(255,255,255,0) 60%), var(--center);
+  border:3px solid var(--ring); box-shadow:0 0 12px -2px var(--ring), inset 0 2px 6px rgba(0,0,0,.4);
+  cursor:pointer; display:flex; align-items:center; justify-content:center; padding:0;
+}
+.z-center .dot{width:9px;height:9px;border-radius:50%;background:var(--dot);box-shadow:0 0 8px var(--dot)}
+.z-center:active{transform:scale(.96)}
+.wheel button:focus-visible{outline:2px solid var(--glow);outline-offset:1px}
+
+/* ============================================================
+   RESPONSIVE + MOTION
+   ============================================================ */
+@media (min-width:768px) and (min-height:760px){ .device{margin:10px 0} }
+@media (max-width:330px){ body{padding:8px 4px} .device{width:308px} }
+@media (prefers-reduced-motion: reduce){
+  .view,.toast,.wheel .ind{transition:none}
+  .txt.mq{animation:none}
+  .batt.loading i{animation:none;transform:scaleX(.5)}
+}
+</style>
+</head>
+<body>
+
+<div id="fileBanner" class="banner" role="status" hidden>
+  <span aria-hidden="true">⚠</span>
+  <p>Some YouTube embeds fail from a local file. Run '<code>python3 -m http.server 8000</code>' in this folder and open <a href="http://localhost:8000" target="_blank" rel="noopener noreferrer">http://localhost:8000</a></p>
+  <button type="button" id="bannerClose" aria-label="Dismiss local file notice">✕</button>
+</div>
+
+<main class="device" id="device" aria-label="iPod Neo media player">
+  <div class="bezel">
+    <div class="screen" id="screen">
+      <header class="hdr">
+        <span class="hdr-state" id="hdrState" aria-hidden="true"></span>
+        <span class="ttl" id="hdrTitle">iPod Neo</span>
+        <span class="hdr-flag" id="hdrSleep" title="Sleep timer active" hidden>zZ</span>
+        <span class="hdr-flag" id="hdrMute" title="Muted" hidden>MUTE</span>
+        <span class="batt idle" id="batt" role="img" aria-label="Player status: loading"><i></i></span>
+      </header>
+      <div class="stage">
+        <!-- The official YouTube player lives here, always visible at 200x200 CSS px (album art / video panel). -->
+        <div class="artframe">
+          <div class="art-ph" id="artMsg">Loading YouTube player…</div>
+          <div id="yt-player"></div>
+        </div>
+        <div class="side">
+          <div class="thumb"><img id="thumb" alt="" hidden></div>
+          <div class="count" id="count">–</div>
+          <div class="viz" id="viz" aria-hidden="true"></div>
+          <div class="stl" id="stLabel">LOAD</div>
+        </div>
+      </div>
+      <div class="panel" id="panel" role="region" aria-label="Menu screen">
+        <div class="toast" id="toast" role="status" aria-live="polite"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="wheel" id="wheel" role="group" aria-label="Click wheel. Drag around the ring to scroll.">
+    <svg viewBox="0 0 180 180" aria-hidden="true" focusable="false" id="wheelSvg">
+      <circle class="disc" cx="90" cy="90" r="88"></circle>
+      <circle class="inner" cx="90" cy="90" r="64"></circle>
+    </svg>
+    <span class="ind" aria-hidden="true"></span>
+    <button type="button" class="z z-top" data-zone="menu" aria-label="Menu: go back. Long press for main menu">MENU</button>
+    <button type="button" class="z z-right" data-zone="next" aria-label="Next track. Long press to seek forward 10 seconds">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 6l8 6-8 6V6zm8 0l8 6-8 6V6zm8 0h2v12h-2z"/></svg>
+    </button>
+    <button type="button" class="z z-bottom" data-zone="play" aria-label="Play or pause">
+      <svg viewBox="0 0 28 24" aria-hidden="true"><path fill="currentColor" d="M3 5l9 7-9 7V5zm13 0h3v14h-3zm6 0h3v14h-3z"/></svg>
+    </button>
+    <button type="button" class="z z-left" data-zone="prev" aria-label="Previous track. Long press to seek back 10 seconds">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M20 6l-8 6 8 6V6zm-8 0l-8 6 8 6V6zM2 6h2v12H2z"/></svg>
+    </button>
+    <button type="button" class="z-center" data-zone="center" aria-label="Select"><span class="dot"></span></button>
+  </div>
+</main>
+
+<p class="foot">Unofficial fan-made player. Playback uses YouTube's official embedded player; not affiliated with Apple, Google or YouTube.</p>
+<div id="sr" class="sr-only" aria-live="polite"></div>
+<input type="file" id="importFile" accept="application/json,.json" hidden>
+
+<script>
+(function () {
+  'use strict';
+
+  /* ==========================================================
+     CONFIG
+     ========================================================== */
+  // Demo queue — REPLACEABLE PLACEHOLDERS. Swap these video IDs for any embeddable
+  // videos you like. If one is blocked from embedding it is skipped automatically.
+  const DEMO_TRACKS = [
+    { id: 'dQw4w9WgXcQ', title: 'Never Gonna Give You Up', channel: 'Rick Astley' },
+    { id: 'fJ9rUzIMcZQ', title: 'Bohemian Rhapsody', channel: 'Queen Official' },
+    { id: 'kJQP7kiw5Fk', title: 'Despacito ft. Daddy Yankee', channel: 'Luis Fonsi' },
+    { id: 'OPf0YbXqDm0', title: 'Uptown Funk ft. Bruno Mars', channel: 'Mark Ronson' },
+    { id: '9bZkp7q19f0', title: 'Gangnam Style', channel: 'officialpsy' }
+  ];
+  const THEMES = [
+    { id: 'neon', name: 'Neon violet' },
+    { id: 'silver', name: 'Classic silver' },
+    { id: 'midnight', name: 'Midnight' },
+    { id: 'sunset', name: 'Sunset' }
+  ];
+  const SPEEDS = [0.75, 1, 1.25, 1.5, 1.75, 2];
+  const SLEEP_OPTIONS = [0, 15, 30, 60];
+  const VIZ_COLORS = ['--c1', '--c2', '--c3', '--c4', '--c5'];
+  const VIZ_BARS = 12;
+
+  /* ==========================================================
+     UTILS
+     ========================================================== */
+  const Utils = {
+    el(tag, props, ...children) {
+      const n = document.createElement(tag);
+      if (props) {
+        for (const k of Object.keys(props)) {
+          const v = props[k];
+          if (v == null || v === false) continue;
+          if (k === 'class') n.className = v;
+          else if (k === 'text') n.textContent = v;          // always textContent: no unsanitized HTML
+          else if (k.startsWith('on') && typeof v === 'function') n.addEventListener(k.slice(2), v);
+          else n.setAttribute(k, v === true ? '' : String(v));
+        }
+      }
+      for (const c of children.flat()) {
+        if (c == null || c === false) continue;
+        n.appendChild(typeof c === 'string' ? document.createTextNode(c) : c);
+      }
+      return n;
+    },
+    // HTML-escape helper (used for any string that must ever be placed in markup).
+    esc(s) {
+      return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    },
+    clamp: (v, a, b) => Math.min(b, Math.max(a, v)),
+    fmt(sec) {
+      sec = Math.floor(Number(sec) || 0);
+      if (sec < 0) sec = 0;
+      const h = Math.floor(sec / 3600), m = Math.floor((sec % 3600) / 60), s = sec % 60;
+      return (h ? h + ':' + String(m).padStart(2, '0') : m) + ':' + String(s).padStart(2, '0');
+    },
+    debounce(fn, ms) {
+      let t = null;
+      const d = (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); };
+      d.cancel = () => clearTimeout(t);
+      return d;
+    },
+    uid: () => Math.random().toString(36).slice(2, 9) + Date.now().toString(36).slice(-4),
+    // Fisher–Yates shuffle (returns a new array)
+    shuffle(arr) {
+      const a = arr.slice();
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    },
+    isoDur(s) {
+      const m = /P(?:(\d+)D)?T?(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/.exec(String(s || ''));
+      if (!m) return 0;
+      return (+m[1] || 0) * 86400 + (+m[2] || 0) * 3600 + (+m[3] || 0) * 60 + (+m[4] || 0);
+    },
+    reduced: () => { try { return window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) { return false; } },
+    vibrate(ms) { try { if (Store.state.settings.haptics && navigator.vibrate) navigator.vibrate(ms); } catch (e) { /* ignore */ } },
+    title: t => (t && t.title) || ('YouTube video ' + (t ? t.id : '')),
+    artist: t => (t && t.channel) || 'YouTube',
+    thumb: (id, q) => 'https://i.ytimg.com/vi/' + id + '/' + (q || 'mqdefault') + '.jpg',
+    ID_RE: /^[A-Za-z0-9_-]{11}$/
+  };
+
+  /* ==========================================================
+     STORE (persistence: single versioned localStorage key)
+     ========================================================== */
+  const Store = (() => {
+    const KEY = 'ipodNeo.state.v1';
+    const VERSION = 1;
+    const defaults = () => ({
+      version: VERSION,
+      settings: { apiKey: '', theme: 'neon', musicOnly: true, haptics: true, volume: 70, speed: 1, onboarded: false },
+      library: [], playlists: [], recent: [],
+      queue: { items: [], current: null, shuffle: false, repeat: 'off' }
+    });
+    let state = defaults(), lastError = null, saveT = null;
+
+    function cleanTrack(t) {
+      if (!t || typeof t !== 'object') return null;
+      const id = String(t.id || '');
+      if (!Utils.ID_RE.test(id)) return null;
+      return {
+        id,
+        title: String(t.title || '').slice(0, 300),
+        channel: String(t.channel || '').slice(0, 200),
+        duration: Math.max(0, Math.round(Number(t.duration) || 0))
+      };
+    }
+    function cleanList(a, max) { return (Array.isArray(a) ? a : []).map(cleanTrack).filter(Boolean).slice(0, max || 5000); }
+    function normalize(raw) {
+      const d = defaults();
+      if (!raw || typeof raw !== 'object') return d;
+      const rs = raw.settings || {}, s = d.settings;
+      if (typeof rs.apiKey === 'string') s.apiKey = rs.apiKey.trim().slice(0, 100);
+      if (THEMES.some(t => t.id === rs.theme)) s.theme = rs.theme;
+      ['musicOnly', 'haptics', 'onboarded'].forEach(k => { if (typeof rs[k] === 'boolean') s[k] = rs[k]; });
+      if (Number.isFinite(rs.volume)) s.volume = Utils.clamp(Math.round(rs.volume), 0, 100);
+      if (SPEEDS.includes(rs.speed)) s.speed = rs.speed;
+      d.library = cleanList(raw.library);
+      d.recent = cleanList(raw.recent, 50);
+      d.playlists = (Array.isArray(raw.playlists) ? raw.playlists : [])
+        .filter(p => p && typeof p.name === 'string')
+        .map(p => ({ id: String(p.id || Utils.uid()).slice(0, 40), name: p.name.slice(0, 80) || 'Playlist', tracks: cleanList(p.tracks) }));
+      const rq = raw.queue || {};
+      d.queue.items = (Array.isArray(rq.items) ? rq.items : []).map(it => {
+        const t = cleanTrack(it && it.track);
+        return t ? { uid: String((it && it.uid) || Utils.uid()).slice(0, 40), track: t } : null;
+      }).filter(Boolean).slice(0, 2000);
+      d.queue.current = d.queue.items.some(i => i.uid === rq.current) ? rq.current : (d.queue.items[0] ? d.queue.items[0].uid : null);
+      d.queue.shuffle = !!rq.shuffle;
+      d.queue.repeat = ['off', 'all', 'one'].includes(rq.repeat) ? rq.repeat : 'off';
+      return d;
+    }
+    function load() {
+      try {
+        const txt = localStorage.getItem(KEY);
+        if (txt) state = normalize(JSON.parse(txt));
+      } catch (e) {
+        lastError = 'Saved data could not be read (storage blocked or corrupt). Starting fresh.';
+        state = defaults();
+      }
+    }
+    function saveNow() {
+      clearTimeout(saveT); saveT = null;
+      try { localStorage.setItem(KEY, JSON.stringify(state)); return true; }
+      catch (e) { UI.toast('Could not save — browser storage is full or blocked.', 'error'); return false; }
+    }
+    function save() { clearTimeout(saveT); saveT = setTimeout(saveNow, 150); }
+    function reset() { state = defaults(); state.settings.onboarded = true; saveNow(); }
+    function exportData() {
+      const copy = JSON.parse(JSON.stringify(state));
+      copy.settings.apiKey = '';            // never export the API key
+      copy.exportedAt = new Date().toISOString();
+      copy.app = 'iPod Neo';
+      return copy;
+    }
+    function importData(text) {
+      const raw = JSON.parse(text);
+      if (!raw || typeof raw !== 'object' || !('version' in raw)) throw new Error('This is not an iPod Neo backup file.');
+      const next = normalize(raw);
+      next.settings.apiKey = state.settings.apiKey;   // keep the locally stored key
+      next.settings.onboarded = true;
+      state = next;
+      saveNow();
+    }
+    function each(fn) {
+      state.library.forEach(fn); state.recent.forEach(fn);
+      state.playlists.forEach(p => p.tracks.forEach(fn));
+      state.queue.items.forEach(i => fn(i.track));
+    }
+    function enrich(id, patch) {
+      let changed = false;
+      each(t => { if (t.id === id) for (const k in patch) if (!t[k] && patch[k]) { t[k] = patch[k]; changed = true; } });
+      if (changed) save();
+    }
+    const copy = t => cleanTrack(t);
+    function inLibrary(id) { return state.library.some(t => t.id === id); }
+    function addToLibrary(tracks) {
+      let n = 0;
+      tracks.forEach(t => { if (!inLibrary(t.id)) { state.library.unshift(copy(t)); n++; } });
+      save(); return n;
+    }
+    function removeFromLibrary(id) { state.library = state.library.filter(t => t.id !== id); save(); }
+    function addRecent(t) {
+      state.recent = [copy(t)].concat(state.recent.filter(r => r.id !== t.id)).slice(0, 50);
+      save();
+    }
+    const pl = id => state.playlists.find(p => p.id === id);
+    function createPlaylist(name, tracks) {
+      const p = { id: Utils.uid(), name: String(name).slice(0, 80), tracks: (tracks || []).map(copy).filter(Boolean) };
+      state.playlists.push(p); save(); return p;
+    }
+    function addToPlaylist(id, t) {
+      const p = pl(id); if (!p) return false;
+      if (p.tracks.some(x => x.id === t.id)) return false;
+      p.tracks.push(copy(t)); save(); return true;
+    }
+    function moveIn(arr, i, d) {
+      const j = i + d;
+      if (i < 0 || j < 0 || j >= arr.length) return i;
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+      return j;
+    }
+    return {
+      get state() { return state; }, get lastError() { return lastError; },
+      load, save, saveNow, reset, exportData, importData, enrich,
+      inLibrary, addToLibrary, removeFromLibrary, addRecent,
+      playlist: pl, createPlaylist, addToPlaylist,
+      renamePlaylist(id, name) { const p = pl(id); if (p) { p.name = String(name).slice(0, 80); save(); } },
+      deletePlaylist(id) { state.playlists = state.playlists.filter(p => p.id !== id); save(); },
+      movePlaylist(id, d) { const i = state.playlists.findIndex(p => p.id === id); moveIn(state.playlists, i, d); save(); },
+      removeFromPlaylist(id, idx) { const p = pl(id); if (p) { p.tracks.splice(idx, 1); save(); } },
+      moveInPlaylist(id, idx, d) { const p = pl(id); if (!p) return idx; const j = moveIn(p.tracks, idx, d); save(); return j; },
+      clearRecent() { state.recent = []; save(); }
+    };
+  })();
+
+  /* ==========================================================
+     YOUTUBE SERVICE (URL/ID parsing + Data API v3 calls)
+     ========================================================== */
+  const YouTubeService = (() => {
+    const LIST_RE = /^(PL|OLAK5uy_|RD|UU|LL|FL|OL|UL|PU|VL)[A-Za-z0-9_-]{8,}$/;
+    const BASE = 'https://www.googleapis.com/youtube/v3/';
+
+    class ApiError extends Error { constructor(code, msg) { super(msg); this.code = code; } }
+
+    /** Parse any YouTube / YouTube Music URL or bare ID. Returns {videoId, listId, music} | {error} | null */
+    function parse(input) {
+      let s = String(input || '').trim();
+      if (!s) return null;
+      if (Utils.ID_RE.test(s)) return { videoId: s, listId: null, music: false };
+      if (LIST_RE.test(s)) return { videoId: null, listId: s.replace(/^VL/, ''), music: false };
+      if (!/^[a-z]+:\/\//i.test(s)) s = 'https://' + s;
+      let u;
+      try { u = new URL(s); } catch (e) { return null; }
+      const hostFull = u.hostname.toLowerCase();
+      const host = hostFull.replace(/^(www|m|music)\./, '');
+      let videoId = null;
+      let listId = u.searchParams.get('list');
+      if (host === 'youtu.be') {
+        videoId = u.pathname.split('/')[1] || null;
+      } else if (host === 'youtube.com' || host === 'youtube-nocookie.com') {
+        const parts = u.pathname.split('/').filter(Boolean);
+        const p0 = (parts[0] || '').toLowerCase();
+        if (p0 === 'watch') videoId = u.searchParams.get('v');
+        else if (['shorts', 'embed', 'live', 'v', 'e'].includes(p0)) videoId = parts[1] || null;
+        else if (p0 === 'browse') {
+          const b = parts[1] || '';
+          if (/^VL/.test(b)) listId = b.slice(2);                 // music.youtube.com/browse/VLPL… = playlist
+          else return { error: 'album-browse' };                   // MPREb… album pages are not embeddable IDs
+        } else if (p0 !== 'playlist' && !listId) return null;
+      } else return null;
+      if (videoId && !Utils.ID_RE.test(videoId)) videoId = null;
+      if (listId && !/^[A-Za-z0-9_-]{10,}$/.test(listId)) listId = null;
+      if (!videoId && !listId) return null;
+      return { videoId, listId, music: hostFull.startsWith('music.') };
+    }
+
+    async function api(path, params, key, signal) {
+      if (!navigator.onLine) throw new ApiError('offline', 'You appear to be offline.');
+      const url = new URL(BASE + path);
+      Object.keys(params).forEach(k => { if (params[k] != null) url.searchParams.set(k, params[k]); });
+      url.searchParams.set('key', key);                           // the key is never logged
+      let res;
+      try { res = await fetch(url.toString(), { signal }); }
+      catch (e) {
+        if (e && e.name === 'AbortError') throw e;
+        throw new ApiError('network', 'Network error — check your connection.');
+      }
+      let data = null;
+      try { data = await res.json(); } catch (e) { data = null; }
+      if (!res.ok) {
+        const err = (data && data.error) || {};
+        const reason = (err.errors && err.errors[0] && err.errors[0].reason) || '';
+        const all = reason + ' ' + (err.message || '') + ' ' + JSON.stringify(err.details || '');
+        if (/quota|dailyLimit|rateLimit/i.test(reason))
+          throw new ApiError('quota', 'YouTube API quota exceeded (10,000 units/day; a search costs ~100). Paste links instead, or try again after midnight Pacific Time.');
+        if (/keyInvalid|API_KEY_INVALID|API key not valid/i.test(all))
+          throw new ApiError('key', 'That API key is not valid. Check it in Settings.');
+        if (/accessNotConfigured|SERVICE_DISABLED|has not been used/i.test(all))
+          throw new ApiError('disabled', 'YouTube Data API v3 is not enabled for this key\'s Google Cloud project.');
+        if (/referer|referrer|ipRefererBlocked|API_KEY_HTTP_REFERRER_BLOCKED/i.test(all))
+          throw new ApiError('referrer', 'This key\'s HTTP-referrer restriction blocks this page (file:// sends none). Run from localhost or relax the restriction.');
+        if (/playlistNotFound/i.test(reason)) throw new ApiError('notfound', 'Playlist not found or private.');
+        throw new ApiError('http', 'YouTube API error (' + res.status + ').');
+      }
+      return data || {};
+    }
+
+    async function videos(ids, key, signal) {
+      const out = [];
+      for (let i = 0; i < ids.length; i += 50) {
+        const chunk = ids.slice(i, i + 50);
+        const data = await api('videos', { part: 'snippet,contentDetails', id: chunk.join(','), maxResults: 50 }, key, signal);
+        (data.items || []).forEach(v => out.push({
+          id: v.id, title: (v.snippet && v.snippet.title) || '', channel: (v.snippet && v.snippet.channelTitle) || '',
+          duration: Utils.isoDur(v.contentDetails && v.contentDetails.duration)
+        }));
+      }
+      const map = new Map(out.map(t => [t.id, t]));
+      return ids.map(id => map.get(id)).filter(Boolean);
+    }
+
+    async function search(q, musicOnly, key, signal) {
+      const params = { part: 'snippet', type: 'video', q, maxResults: 20, videoEmbeddable: 'true' };
+      if (musicOnly) params.videoCategoryId = '10';
+      const data = await api('search', params, key, signal);
+      const ids = (data.items || []).map(i => i.id && i.id.videoId).filter(id => Utils.ID_RE.test(id || ''));
+      if (!ids.length) return [];
+      return videos(ids, key, signal);                            // videos.list = durations + clean titles
+    }
+
+    async function playlistItems(listId, key) {
+      const ids = [], meta = new Map();
+      let pageToken = null, pages = 0;
+      do {
+        const data = await api('playlistItems', { part: 'snippet,contentDetails', playlistId: listId, maxResults: 50, pageToken }, key);
+        (data.items || []).forEach(it => {
+          const id = it.contentDetails && it.contentDetails.videoId;
+          const title = (it.snippet && it.snippet.title) || '';
+          if (!Utils.ID_RE.test(id || '') || /^(Deleted|Private) video$/.test(title)) return;
+          ids.push(id);
+          meta.set(id, { id, title, channel: (it.snippet && (it.snippet.videoOwnerChannelTitle || '')).replace(/ - Topic$/, ''), duration: 0 });
+        });
+        pageToken = data.nextPageToken; pages++;
+      } while (pageToken && pages < 4);
+      try {
+        const full = await videos(ids, key);
+        full.forEach(t => meta.set(t.id, Object.assign(meta.get(t.id) || {}, { duration: t.duration })));
+      } catch (e) { /* durations are optional */ }
+      return ids.map(id => meta.get(id));
+    }
+
+    async function testKey(key) {
+      await api('videos', { part: 'id', id: 'dQw4w9WgXcQ' }, key);
+      return true;
+    }
+    return { parse, search, videos, playlistItems, testKey, ApiError };
+  })();
+
+  /* ==========================================================
+     PLAYER CONTROLLER (YouTube IFrame wrapper + state machine)
+     States: loading | idle | ready | playing | paused | buffering | ended | error
+     ========================================================== */
+  const PlayerController = (() => {
+    const ERR = {
+      2: 'invalid video ID', 5: 'HTML5 player error', 100: 'video not found or private',
+      101: 'the owner blocks embedding', 150: 'the owner blocks embedding',
+      153: 'embed blocked (missing referrer — run from http://localhost)'
+    };
+    let player = null, ready = false, state = 'loading', track = null, pending = null;
+    let recorded = false, errorStreak = 0, apiRequested = false, resolver = null, skipT = null, loadT = null;
+    const subs = [];
+    const on = fn => subs.push(fn);
+    function setState(s) { if (state === s) return; state = s; subs.forEach(f => { try { f(s); } catch (e) { /* ignore */ } }); }
+
+    function loadApi() {
+      if (player) return;
+      if (window.YT && typeof window.YT.Player === 'function' && window.YT.loaded) { create(); return; }
+      if (apiRequested) return;
+      apiRequested = true;
+      const prev = window.onYouTubeIframeAPIReady;
+      window.onYouTubeIframeAPIReady = function () { if (typeof prev === 'function') { try { prev(); } catch (e) { /* ignore */ } } create(); };
+      const s = document.createElement('script');
+      s.src = 'https://www.youtube.com/iframe_api';
+      s.async = true;
+      s.onerror = () => {
+        apiRequested = false; s.remove(); setState('error');
+        UI.setArtMessage('YouTube player unavailable. Check your connection — it retries automatically when you are back online.');
+        UI.toast('Could not load the YouTube player.', 'error');
+      };
+      document.head.appendChild(s);
+    }
+    function create() {
+      if (player) return;
+      const vars = { playsinline: 1, rel: 0, modestbranding: 1, iv_load_policy: 3, enablejsapi: 1 };
+      if (/^https?:$/.test(location.protocol)) vars.origin = location.origin;
+      try {
+        player = new YT.Player('yt-player', {
+          width: '200', height: '200', playerVars: vars,
+          events: { onReady, onStateChange, onError }
+        });
+      } catch (e) { setState('error'); UI.toast('The YouTube player failed to start.', 'error'); }
+    }
+    function onReady() {
+      ready = true;
+      UI.setArtMessage('');
+      try { player.setVolume(Store.state.settings.volume); } catch (e) { /* ignore */ }
+      if (pending) { const p = pending; pending = null; doLoad(p); }
+      else {
+        const c = Queue.current();
+        if (c) doLoad({ track: c.track, autoplay: false });
+        else setState('idle');
+      }
+    }
+    function doLoad({ track: t, autoplay, start }) {
+      track = t; recorded = false;
+      const opts = { videoId: t.id, startSeconds: Math.max(0, start || 0) };
+      try { autoplay ? player.loadVideoById(opts) : player.cueVideoById(opts); } catch (e) { /* ignore */ }
+      setState(autoplay ? 'loading' : 'ready');
+      clearTimeout(loadT);
+      if (autoplay) loadT = setTimeout(() => { if (state === 'loading') setState('ready'); }, 6000);
+      MediaSessionBridge.update(t);
+      UI.refresh();
+    }
+    function enrich() {
+      try {
+        const d = player.getVideoData && player.getVideoData();
+        if (!d || !track || d.video_id !== track.id) return;
+        const patch = {};
+        if (!track.title && d.title) patch.title = d.title;
+        if (!track.channel && d.author) patch.channel = d.author;
+        const dur = player.getDuration();
+        if (!track.duration && dur > 0) patch.duration = Math.round(dur);
+        if (Object.keys(patch).length) { Store.enrich(track.id, patch); Object.assign(track, patch); MediaSessionBridge.update(track); UI.refresh(); }
+      } catch (e) { /* ignore */ }
+    }
+    function onStateChange(e) {
+      const S = window.YT.PlayerState;
+      switch (e.data) {
+        case S.PLAYING:
+          clearTimeout(loadT); errorStreak = 0; setState('playing'); enrich();
+          try { const r = Store.state.settings.speed; if (player.getPlaybackRate() !== r) player.setPlaybackRate(r); } catch (err) { /* ignore */ }
+          if (!recorded && track) { recorded = true; Store.addRecent(track); }
+          break;
+        case S.PAUSED: setState('paused'); break;
+        case S.BUFFERING: setState('buffering'); break;
+        case S.ENDED: setState('ended'); App.onEnded(); break;
+        case S.CUED: if (resolver) resolver.check(); else { setState('ready'); enrich(); } break;
+        default: if (state !== 'loading' && state !== 'error') setState('ready');
+      }
+      MediaSessionBridge.state(state);
+      UI.refreshChrome();
+    }
+    function onError(e) {
+      const code = e && e.data;
+      if (resolver) { resolver.fail(code); return; }
+      clearTimeout(loadT);
+      setState('error');
+      errorStreak++;
+      const name = track ? Utils.title(track) : 'This video';
+      UI.toast('Can\u2019t play \u201C' + name + '\u201D: ' + (ERR[code] || 'playback error') + '. Skipping\u2026', 'error', 3500);
+      if (errorStreak >= Math.max(1, Queue.length())) {
+        errorStreak = 0;
+        setTimeout(() => UI.toast('No track in the queue could be embedded here. Try other links' + (location.protocol === 'file:' ? ' or run from http://localhost.' : '.'), 'error', 6000), 3600);
+        return;
+      }
+      clearTimeout(skipT);
+      skipT = setTimeout(() => App.next({ auto: true }), 1800);
+    }
+
+    /** Load a playlist through the IFrame player and read its video IDs (no API key needed). */
+    function resolvePlaylist(listId) {
+      return new Promise((resolve, reject) => {
+        if (!ready) { reject(new Error('The YouTube player is still loading — try again in a moment.')); return; }
+        let done = false, iv = null;
+        const t0 = Date.now();
+        const finish = (err, ids) => {
+          if (done) return;
+          done = true; clearInterval(iv); resolver = null;
+          setState('ready');
+          err ? reject(err) : resolve(ids);
+        };
+        resolver = {
+          check() { try { const ids = player.getPlaylist(); if (ids && ids.length) finish(null, ids.slice()); } catch (e) { /* not yet */ } },
+          fail(code) { finish(new Error(code === 101 || code === 150 ? 'That playlist can\u2019t be embedded.' : 'YouTube could not load that playlist (private, deleted or a personal mix).')); }
+        };
+        setState('loading');
+        try { player.cuePlaylist({ listType: 'playlist', list: listId, index: 0 }); }
+        catch (e) { finish(new Error('Could not load that playlist.')); return; }
+        iv = setInterval(() => {
+          if (resolver) resolver.check();
+          if (Date.now() - t0 > 12000) finish(new Error('Timed out reading the playlist. It may be private or unavailable.'));
+        }, 300);
+      });
+    }
+
+    const safe = fn => { if (!ready || !player) return undefined; try { return fn(); } catch (e) { return undefined; } };
+    return {
+      on, loadApi,
+      load(t, autoplay, start) { clearTimeout(skipT); if (!ready) { pending = { track: t, autoplay, start }; track = t; UI.refresh(); return; } doLoad({ track: t, autoplay, start }); },
+      play() { if (!ready) { UI.toast('The YouTube player is still loading…'); return; } safe(() => player.playVideo()); },
+      pause() { safe(() => player.pauseVideo()); },
+      toggle() { (state === 'playing' || state === 'buffering') ? this.pause() : this.play(); },
+      seekTo(s, ahead) { safe(() => player.seekTo(Math.max(0, s), ahead !== false)); },
+      seekBy(d) { const { cur, dur } = this.times(); this.seekTo(Utils.clamp(cur + d, 0, dur > 0 ? Math.max(0, dur - 1) : cur + d)); },
+      times() {
+        const cur = safe(() => player.getCurrentTime()) || 0;
+        const dur = safe(() => player.getDuration()) || (track && track.duration) || 0;
+        return { cur, dur };
+      },
+      setVolume(v) { safe(() => { player.setVolume(v); if (v > 0 && player.isMuted()) player.unMute(); }); },
+      isMuted() { return !!safe(() => player.isMuted()); },
+      toggleMute() { const m = this.isMuted(); safe(() => (m ? player.unMute() : player.mute())); return !m; },
+      setRate(r) { safe(() => player.setPlaybackRate(r)); },
+      resetErrors() { errorStreak = 0; },
+      resolvePlaylist,
+      get state() { return state; }, get ready() { return ready; }, get track() { return track; },
+      markEnded() { setState('ended'); }
+    };
+  })();
+
+  /* ==========================================================
+     QUEUE (play next, add, clear, reorder, shuffle pass, repeat)
+     ========================================================== */
+  const Queue = (() => {
+    let pass = [];       // shuffle: uids not yet played in this pass
+    let history = [];    // uids played before (for Previous in shuffle mode)
+    const Q = () => Store.state.queue;
+    const items = () => Q().items;
+    const idxOf = uid => items().findIndex(i => i.uid === uid);
+    const get = uid => items().find(i => i.uid === uid) || null;
+    const current = () => get(Q().current);
+    function newPass() { pass = Utils.shuffle(items().map(i => i.uid).filter(u => u !== Q().current)); }
+    function setCurrent(uid, back) {
+      const q = Q();
+      if (!back && q.current && q.current !== uid) { history.push(q.current); if (history.length > 300) history.shift(); }
+      pass = pass.filter(u => u !== uid);
+      q.current = uid;
+      Store.save();
+    }
+    function next() {
+      const q = Q(), list = items();
+      if (!list.length) return null;
+      if (q.shuffle) {
+        pass = pass.filter(u => u !== q.current && idxOf(u) >= 0);
+        if (!pass.length) {
+          if (q.repeat !== 'all') return null;   // pass complete: never repeat until a new pass
+          newPass();
+          if (!pass.length) return list[0].uid;  // single-item queue
+        }
+        return pass[0];
+      }
+      const i = idxOf(q.current);
+      if (i + 1 < list.length) return list[i + 1].uid;
+      return q.repeat === 'all' ? list[0].uid : null;
+    }
+    function prev() {
+      const q = Q(), list = items();
+      if (!list.length) return null;
+      if (q.shuffle) {
+        while (history.length) {
+          const u = history.pop();
+          if (idxOf(u) >= 0) { if (q.current) pass.unshift(q.current); return u; }
+        }
+        return null;
+      }
+      const i = idxOf(q.current);
+      if (i > 0) return list[i - 1].uid;
+      return q.repeat === 'all' ? list[list.length - 1].uid : null;
+    }
+    function add(tracks, where) {
+      const q = Q();
+      const made = tracks.map(t => ({ uid: Utils.uid(), track: { id: t.id, title: t.title || '', channel: t.channel || '', duration: t.duration || 0 } }));
+      if (!made.length) return null;
+      if (where === 'replace') {
+        q.items = made; q.current = null; history = []; pass = [];
+        if (q.shuffle) pass = Utils.shuffle(made.map(m => m.uid));
+      } else if (where === 'next') {
+        const i = idxOf(q.current);
+        q.items.splice(i + 1, 0, ...made);
+        if (q.shuffle) pass.unshift(...made.map(m => m.uid));
+      } else {
+        q.items.push(...made);
+        if (q.shuffle) made.forEach(m => pass.splice(Math.floor(Math.random() * (pass.length + 1)), 0, m.uid));
+      }
+      if (!q.current) q.current = made[0].uid;
+      Store.save();
+      return made[0].uid;
+    }
+    return {
+      items, get, current, idxOf, setCurrent, next, prev, add,
+      length: () => items().length,
+      remove(uid) { const q = Q(); q.items = q.items.filter(i => i.uid !== uid); pass = pass.filter(u => u !== uid); Store.save(); },
+      move(uid, d) {
+        const list = items(), i = idxOf(uid), j = i + d;
+        if (i < 0 || j < 0 || j >= list.length) return;
+        [list[i], list[j]] = [list[j], list[i]]; Store.save();
+      },
+      clear() { const q = Q(); const c = current(); q.items = c ? [c] : []; pass = []; history = []; Store.save(); },
+      setShuffle(on) { Q().shuffle = !!on; history = []; on ? newPass() : (pass = []); Store.save(); },
+      cycleRepeat() { const q = Q(); q.repeat = { off: 'all', all: 'one', one: 'off' }[q.repeat]; Store.save(); return q.repeat; },
+      reinit() { pass = []; history = []; if (Q().shuffle) newPass(); }
+    };
+  })();
+
+  /* ==========================================================
+     MEDIA SESSION (lock-screen / hardware media keys)
+     ========================================================== */
+  const MediaSessionBridge = (() => {
+    const ok = () => 'mediaSession' in navigator;
+    let lastPos = 0;
+    return {
+      init() {
+        if (!ok()) return;
+        const set = (a, h) => { try { navigator.mediaSession.setActionHandler(a, h); } catch (e) { /* unsupported action */ } };
+        set('play', () => PlayerController.play());
+        set('pause', () => PlayerController.pause());
+        set('previoustrack', () => App.prev());
+        set('nexttrack', () => App.next());
+        set('seekto', d => { if (d && Number.isFinite(d.seekTime)) PlayerController.seekTo(d.seekTime); });
+        set('seekbackward', d => PlayerController.seekBy(-((d && d.seekOffset) || 10)));
+        set('seekforward', d => PlayerController.seekBy((d && d.seekOffset) || 10));
+      },
+      update(t) {
+        if (!ok() || !t || typeof MediaMetadata !== 'function') return;
+        try {
+          navigator.mediaSession.metadata = new MediaMetadata({
+            title: Utils.title(t), artist: Utils.artist(t), album: 'iPod Neo',
+            artwork: [
+              { src: Utils.thumb(t.id, 'mqdefault'), sizes: '320x180', type: 'image/jpeg' },
+              { src: Utils.thumb(t.id, 'hqdefault'), sizes: '480x360', type: 'image/jpeg' }
+            ]
+          });
+        } catch (e) { /* ignore */ }
+      },
+      state(s) { if (!ok()) return; try { navigator.mediaSession.playbackState = s === 'playing' ? 'playing' : (s === 'paused' ? 'paused' : 'none'); } catch (e) { /* ignore */ } },
+      position(cur, dur, rate) {
+        if (!ok() || !navigator.mediaSession.setPositionState || !(dur > 0)) return;
+        const now = Date.now(); if (now - lastPos < 1000) return; lastPos = now;
+        try { navigator.mediaSession.setPositionState({ duration: dur, position: Utils.clamp(cur, 0, dur), playbackRate: rate || 1 }); } catch (e) { /* ignore */ }
+      }
+    };
+  })();
+
+  /* ==========================================================
+     SETTINGS (theme, speed, sleep timer, backup)
+     ========================================================== */
+  const Settings = (() => {
+    let sleepEnd = 0, sleepT = null;
+    return {
+      applyTheme(id) {
+        if (!THEMES.some(t => t.id === id)) id = 'neon';
+        document.documentElement.setAttribute('data-theme', id);
+        Store.state.settings.theme = id; Store.save();
+      },
+      setSpeed(r) { Store.state.settings.speed = r; Store.save(); PlayerController.setRate(r); },
+      setSleep(min) {
+        clearTimeout(sleepT); sleepEnd = 0;
+        if (min > 0) {
+          sleepEnd = Date.now() + min * 60000;
+          sleepT = setTimeout(() => { sleepEnd = 0; PlayerController.pause(); UI.toast('Sleep timer: playback paused. Good night!'); UI.refresh(); }, min * 60000);
+        }
+        UI.refresh();
+      },
+      sleepRemaining() { return sleepEnd ? Math.max(0, Math.ceil((sleepEnd - Date.now()) / 60000)) : 0; },
+      exportLibrary() {
+        try {
+          const blob = new Blob([JSON.stringify(Store.exportData(), null, 2)], { type: 'application/json' });
+          const url = URL.createObjectURL(blob);
+          const a = Utils.el('a', { href: url, download: 'ipod-neo-backup-' + new Date().toISOString().slice(0, 10) + '.json' });
+          document.body.appendChild(a); a.click(); a.remove();
+          setTimeout(() => URL.revokeObjectURL(url), 3000);
+          UI.toast('Backup downloaded (API key is not included).');
+        } catch (e) { UI.toast('Export failed in this browser.', 'error'); }
+      },
+      importLibrary() {
+        const input = document.getElementById('importFile');
+        input.value = '';
+        input.onchange = () => {
+          const f = input.files && input.files[0];
+          if (!f) return;
+          if (f.size > 5 * 1024 * 1024) { UI.toast('That file is too large (max 5 MB).', 'error'); return; }
+          const r = new FileReader();
+          r.onload = () => {
+            try {
+              Store.importData(String(r.result || ''));
+              if (!Store.state.queue.items.length) App.loadDemo();
+              Queue.reinit();
+              Settings.applyTheme(Store.state.settings.theme);
+              const c = Queue.current(); if (c) PlayerController.load(c.track, false);
+              PlayerController.setVolume(Store.state.settings.volume);
+              Router.home();
+              UI.toast('Library restored from backup.');
+            } catch (e) { UI.toast('Import failed: ' + (e && e.message ? e.message : 'invalid JSON file.'), 'error', 4500); }
+          };
+          r.onerror = () => UI.toast('Could not read that file.', 'error');
+          r.readAsText(f);
+        };
+        input.click();
+      }
+    };
+  })();
+
+  /* ==========================================================
+     APP (glue: playback flow + link import)
+     ========================================================== */
+  const App = {
+    busy: false,
+    loadDemo() { Queue.add(DEMO_TRACKS, 'replace'); },
+    playUid(uid, opts) {
+      opts = opts || {};
+      const it = Queue.get(uid); if (!it) return;
+      Queue.setCurrent(uid, !!opts.back);
+      if (opts.user) PlayerController.resetErrors();
+      PlayerController.load(it.track, opts.autoplay !== false);
+      UI.refresh();
+    },
+    playCurrent() {
+      const c = Queue.current() || Queue.items()[0];
+      if (c) App.playUid(c.uid, { user: true });
+      else UI.toast('Queue is empty — use Add by Link first.');
+    },
+    toggle() {
+      const st = PlayerController.state;
+      if (!PlayerController.track || st === 'ended' || st === 'error') { App.playCurrent(); return; }
+      if (st === 'ready' && PlayerController.times().cur < 0.5) { PlayerController.play(); return; }
+      PlayerController.toggle();
+    },
+    next(o) {
+      o = o || {};
+      const uid = Queue.next();
+      if (!uid) { UI.toast('End of queue'); if (o.auto) PlayerController.markEnded(); return; }
+      App.playUid(uid, { user: !o.auto });
+    },
+    prev() {
+      if (PlayerController.times().cur > 3) { PlayerController.seekTo(0); return; }
+      const uid = Queue.prev();
+      if (uid) App.playUid(uid, { back: true, user: true });
+      else PlayerController.seekTo(0);
+    },
+    onEnded() {
+      if (Store.state.queue.repeat === 'one') { PlayerController.seekTo(0); PlayerController.play(); return; }
+      App.next({ auto: true });
+    },
+    playTracks(tracks, shuffle) {
+      if (!tracks || !tracks.length) { UI.toast('Nothing to play here yet.'); return; }
+      Store.state.queue.shuffle = !!shuffle;
+      const first = Queue.add(tracks, 'replace');
+      Queue.reinit();
+      const start = shuffle ? Queue.items()[Math.floor(Math.random() * Queue.length())].uid : first;
+      Store.state.queue.current = start;
+      Queue.reinit();
+      App.playUid(start, { user: true });
+      Router.push('now');
+    },
+    async videoMeta(id) {
+      const key = Store.state.settings.apiKey;
+      if (key && navigator.onLine) {
+        try { const r = await YouTubeService.videos([id], key); if (r[0]) return r[0]; } catch (e) { /* fall back */ }
+      }
+      return { id, title: '', channel: '', duration: 0 };
+    },
+    async resolvePlaylist(listId) {
+      const key = Store.state.settings.apiKey;
+      if (key && navigator.onLine) {
+        try { return await YouTubeService.playlistItems(listId, key); }
+        catch (e) { if (e.code === 'notfound') throw e; /* otherwise fall back to the player */ }
+      }
+      // No key: let the IFrame player load the list, then read the IDs from it.
+      const prevTrack = PlayerController.track;
+      const wasPlaying = PlayerController.state === 'playing';
+      const at = PlayerController.times().cur;
+      UI.toast('Reading playlist through the YouTube player…');
+      try {
+        const ids = await PlayerController.resolvePlaylist(listId);
+        return ids.filter(id => Utils.ID_RE.test(id)).map(id => ({ id, title: '', channel: '', duration: 0 }));
+      } finally {
+        if (prevTrack) PlayerController.load(prevTrack, wasPlaying, at);   // restore what was loaded before
+      }
+    },
+    async importLink(raw, mode) {
+      const p = YouTubeService.parse(raw);
+      if (!p) { UI.toast('That doesn\u2019t look like a YouTube / YouTube Music link or ID.', 'error'); return; }
+      if (p.error === 'album-browse') { UI.toast('Album "browse" pages can\u2019t be embedded. Use Share → Copy link on the album (playlist?list=OLAK5uy_…).', 'error', 5500); return; }
+      if (App.busy) { UI.toast('Still importing — one moment…'); return; }
+      App.busy = true; UI.refreshChrome();
+      try {
+        let tracks;
+        const isMix = p.listId && /^RD/.test(p.listId);
+        if (p.listId && !(isMix && p.videoId)) {
+          tracks = await App.resolvePlaylist(p.listId);
+          if (p.videoId) { const i = tracks.findIndex(t => t.id === p.videoId); if (i > 0) tracks = tracks.slice(i).concat(tracks.slice(0, i)); }
+        } else {
+          tracks = [await App.videoMeta(p.videoId)];
+        }
+        if (!tracks.length) throw new Error('No playable tracks found.');
+        const n = tracks.length, what = n === 1 ? '1 track' : n + ' tracks';
+        if (mode === 'play') { const uid = Queue.add(tracks, 'next'); App.playUid(uid, { user: true }); Router.push('now'); UI.toast('Playing ' + what); }
+        else if (mode === 'next') { Queue.add(tracks, 'next'); UI.toast(what + ' will play next'); }
+        else if (mode === 'end') { Queue.add(tracks, 'end'); UI.toast(what + ' added to queue'); }
+        else if (mode === 'save') { const k = Store.addToLibrary(tracks); UI.toast(k ? k + ' saved to library' : 'Already in your library'); }
+        else if (mode === 'playlist') {
+          const pl = Store.createPlaylist((p.music ? 'YT Music import ' : 'Imported ') + new Date().toLocaleDateString(), tracks);
+          UI.toast('Created playlist \u201C' + pl.name + '\u201D (' + what + ')');
+        }
+        UI.refresh();
+      } catch (e) {
+        UI.toast((e && e.message) || 'Import failed.', 'error', 4500);
+      } finally { App.busy = false; UI.refreshChrome(); }
+    }
+  };
+
+  /* ==========================================================
+     SEARCH (debounced Data API search with loading/error/quota)
+     ========================================================== */
+  const Search = (() => {
+    let ctrl = null, quotaUntil = 0;
+    const looksLikeLink = q => /[/.]/.test(q) && !!YouTubeService.parse(q) && !/\s/.test(q);
+    const refreshIf = e => { if (Router.top() === e) Router.refresh(); };
+    const deb = Utils.debounce((v, e) => run(v, e, false), 550);
+    function onInput(v, e) {
+      if (!Store.state.settings.apiKey) { refreshIf(e); return; }
+      if (String(v).trim().length < 2 || looksLikeLink(v.trim())) {
+        deb.cancel(); if (ctrl) ctrl.abort();
+        e.params.status = 'idle'; e.params.results = null; refreshIf(e); return;
+      }
+      deb(v, e);
+    }
+    async function run(v, e, force) {
+      const q = String(v || '').trim(), key = Store.state.settings.apiKey;
+      if (!key || q.length < 2 || looksLikeLink(q)) return;
+      if (!navigator.onLine) { e.params.status = 'error'; e.params.error = 'You are offline.'; refreshIf(e); return; }
+      if (!force && quotaUntil > Date.now()) { e.params.status = 'error'; e.params.error = 'Quota exceeded — press Enter to retry'; refreshIf(e); return; }
+      if (ctrl) ctrl.abort();
+      ctrl = new AbortController();
+      e.params.status = 'loading'; refreshIf(e);
+      try {
+        e.params.results = await YouTubeService.search(q, Store.state.settings.musicOnly, key, ctrl.signal);
+        e.params.status = 'done';
+      } catch (err) {
+        if (err && err.name === 'AbortError') return;
+        e.params.status = 'error'; e.params.results = [];
+        e.params.error = (err && err.message) || 'Search failed.';
+        if (err && err.code === 'quota') quotaUntil = Date.now() + 10 * 60000;
+        UI.toast(e.params.error, 'error', 5000);
+      }
+      refreshIf(e);
+    }
+    return { onInput, run, looksLikeLink };
+  })();
+
+  /* ==========================================================
+     SCREENS (menu definitions; rebuilt on every refresh)
+     item: {label, right, action, info, now, danger}
+     ========================================================== */
+  const trackRow = (t, ctx, extra) => Object.assign({
+    label: Utils.title(t), right: t.duration ? Utils.fmt(t.duration) : '',
+    action: () => Router.push('track', { track: t, ctx })
+  }, extra || {});
+  const onOff = b => (b ? 'On' : 'Off');
+
+  const Screens = {
+    main: () => ({
+      title: 'iPod Neo', type: 'list', items: [
+        { label: 'Now Playing', right: '›', action: () => Router.push('now') },
+        { label: 'Search', right: Store.state.settings.apiKey ? '›' : 'key ›', action: () => Router.push('search', {}) },
+        { label: 'Library', right: '›', action: () => Router.push('library') },
+        { label: 'Playlists', right: Store.state.playlists.length + ' ›', action: () => Router.push('playlists') },
+        { label: 'Queue', right: Queue.length() + ' ›', action: () => Router.push('queue') },
+        { label: 'Add by Link', right: '›', action: () => Router.push('addlink', {}) },
+        { label: 'Settings', right: '›', action: () => Router.push('settings') }
+      ]
+    }),
+
+    now: () => ({ title: 'Now Playing', type: 'now' }),
+
+    onboarding: () => ({
+      title: 'Welcome', type: 'text',
+      paras: [
+        { h: 'Welcome to iPod Neo' },
+        '1 \u00B7 Spin the wheel (or \u2191/\u2193, mouse wheel) to move. Center / Enter selects. MENU / Esc goes back.',
+        '2 \u00B7 No key needed: open Add by Link and paste any YouTube or YouTube Music link, playlist or ID.',
+        '3 \u00B7 Optional: add a YouTube Data API key in Settings to unlock Search.',
+        { h: 'Press center to start the demo mix \u25B6' }
+      ],
+      hint: 'Center \u25B6 start \u00B7 Menu \u25C0 skip',
+      primary: () => { Store.state.settings.onboarded = true; Store.save(); Router.home(); App.playCurrent(); Router.push('now'); },
+      onLeave: () => { Store.state.settings.onboarded = true; Store.save(); }
+    }),
+
+    search: (params, entry) => {
+      const s = Store.state.settings, items = [];
+      const v = entry.inputValue.trim();
+      if (v && Search.looksLikeLink(v)) {
+        items.push({ label: 'Link detected \u2014 play it', right: '\u25B6', action: () => App.importLink(v, 'play') });
+        items.push({ label: 'Add link to queue', action: () => App.importLink(v, 'end') });
+      }
+      if (!s.apiKey) {
+        items.push({ info: true, label: 'No API key \u2014 search is off' });
+        items.push({ label: 'Add an API key in Settings', right: '›', action: () => Router.push('apikey', {}) });
+        items.push({ label: 'Paste a link instead (Add by Link)', right: '›', action: () => Router.push('addlink', {}) });
+      } else {
+        items.push({ label: 'Music only: ' + onOff(s.musicOnly), action: () => { s.musicOnly = !s.musicOnly; Store.save(); Router.refresh(); Search.run(entry.inputValue, entry, true); } });
+        if (!navigator.onLine) items.push({ info: true, label: 'Offline \u2014 search unavailable' });
+        else if (params.status === 'loading') items.push({ info: true, label: 'Searching\u2026' });
+        else if (params.status === 'error') items.push({ info: true, label: params.error || 'Search failed' });
+        else if (params.status === 'done' && !(params.results || []).length) items.push({ info: true, label: 'No results' });
+        else if (!params.results) items.push({ info: true, label: 'Type 2+ characters (\u2248100 quota units/search)' });
+        (params.results || []).forEach(t => items.push(trackRow(t, { type: 'search' })));
+      }
+      return {
+        title: 'Search', type: 'list', items,
+        input: { placeholder: s.apiKey ? 'Search YouTube\u2026' : 'Paste a link (no key set)', label: 'Search YouTube', onInput: (val, e) => Search.onInput(val, e), onSubmit: (val, e) => { if (Search.looksLikeLink(val.trim())) App.importLink(val.trim(), 'play'); else Search.run(val, e, true); } }
+      };
+    },
+
+    addlink: (params, entry) => {
+      const v = entry.inputValue.trim();
+      const p = v ? YouTubeService.parse(v) : null;
+      let status = 'Paste a YouTube / YT Music link or ID';
+      if (v && !p) status = 'Not a recognised YouTube link or ID';
+      else if (p && p.error) status = 'Album page \u2014 use the album\u2019s Share link';
+      else if (p && p.listId && !(/^RD/.test(p.listId) && p.videoId)) status = 'Playlist detected' + (p.music ? ' (YouTube Music)' : '');
+      else if (p) status = 'Video detected' + (p.music ? ' (YouTube Music)' : '') + ': ' + p.videoId;
+      const go = mode => () => { if (!v) { UI.toast('Paste a link first.'); if (entry.inputEl) entry.inputEl.focus(); return; } App.importLink(v, mode); };
+      const items = [
+        { info: true, label: status },
+        { label: 'Play now', right: '\u25B6', action: go('play') },
+        { label: 'Play next', action: go('next') },
+        { label: 'Add to queue', action: go('end') },
+        { label: 'Save to library', action: go('save') }
+      ];
+      if (p && p.listId) items.push({ label: 'Save as new playlist', action: go('playlist') });
+      return { title: 'Add by Link', type: 'list', items, input: { placeholder: 'youtube.com / music.youtube.com link or ID', label: 'YouTube or YouTube Music link or ID', onInput: () => Router.refresh(), onSubmit: () => go('play')() } };
+    },
+
+    library: () => {
+      const s = Store.state;
+      return {
+        title: 'Library', type: 'list', items: [
+          { label: 'Saved Tracks', right: s.library.length + ' ›', action: () => Router.push('saved') },
+          { label: 'Recently Played', right: s.recent.length + ' ›', action: () => Router.push('recent') },
+          { label: 'Playlists', right: s.playlists.length + ' ›', action: () => Router.push('playlists') },
+          { label: 'Play all saved', action: () => App.playTracks(s.library, false) },
+          { label: 'Shuffle all saved', action: () => App.playTracks(s.library, true) }
+        ]
+      };
+    },
+    saved: () => {
+      const lib = Store.state.library;
+      const items = lib.length ? lib.map(t => trackRow(t, { type: 'library' }))
+        : [{ info: true, label: 'No saved tracks yet' }, { label: 'Add by Link', right: '›', action: () => Router.push('addlink', {}) }];
+      return { title: 'Saved Tracks', type: 'list', items };
+    },
+    recent: () => {
+      const r = Store.state.recent;
+      const items = r.length ? [{ label: 'Clear history', danger: true, action: () => { Store.clearRecent(); UI.toast('History cleared'); Router.refresh(); } }].concat(r.map(t => trackRow(t, { type: 'recent' })))
+        : [{ info: true, label: 'Nothing played yet' }];
+      return { title: 'Recently Played', type: 'list', items };
+    },
+
+    playlists: () => ({
+      title: 'Playlists', type: 'list', items: [{ label: '+ New Playlist', action: () => Router.push('name', { mode: 'new' }) }]
+        .concat(Store.state.playlists.map(p => ({ label: p.name, right: p.tracks.length + ' ›', action: () => Router.push('playlist', { plId: p.id }) })))
+    }),
+    playlist: (params) => {
+      const p = Store.playlist(params.plId);
+      if (!p) return { title: 'Playlist', type: 'list', items: [{ info: true, label: 'Playlist not found' }] };
+      const cur = Queue.current();
+      return {
+        title: p.name, type: 'list', items: [
+          { label: 'Play all', right: '\u25B6', action: () => App.playTracks(p.tracks, false) },
+          { label: 'Shuffle play', action: () => App.playTracks(p.tracks, true) },
+          { label: 'Add current track here', action: () => { if (!cur) return UI.toast('Nothing is playing.'); UI.toast(Store.addToPlaylist(p.id, cur.track) ? 'Added to \u201C' + p.name + '\u201D' : 'Already in this playlist'); Router.refresh(); } },
+          { label: 'Rename', action: () => Router.push('name', { mode: 'rename', plId: p.id }) },
+          { label: 'Move playlist up', action: () => { Store.movePlaylist(p.id, -1); UI.toast('Moved up'); } },
+          { label: 'Move playlist down', action: () => { Store.movePlaylist(p.id, 1); UI.toast('Moved down'); } },
+          { label: 'Delete playlist', danger: true, action: () => Router.push('confirm', { message: 'Delete \u201C' + p.name + '\u201D?', confirmLabel: 'Delete playlist', onConfirm: () => { Store.deletePlaylist(p.id); UI.toast('Playlist deleted'); Router.pop(); Router.pop(); } }) }
+        ].concat(p.tracks.length ? p.tracks.map((t, i) => trackRow(t, { type: 'playlist', plId: p.id, index: i })) : [{ info: true, label: 'Empty \u2014 add tracks from any track menu' }])
+      };
+    },
+    name: (params, entry) => {
+      if (!params.init) {
+        params.init = true;
+        if (params.mode === 'rename') { const p = Store.playlist(params.plId); entry.inputValue = p ? p.name : ''; }
+      }
+      const save = () => {
+        const name = entry.inputValue.trim();
+        if (!name) { UI.toast('Type a name first.'); return; }
+        if (params.mode === 'rename') { Store.renamePlaylist(params.plId, name); UI.toast('Renamed'); Router.pop(); return; }
+        const p = Store.createPlaylist(name, params.track ? [params.track] : []);
+        UI.toast('Created \u201C' + p.name + '\u201D' + (params.track ? ' with 1 track' : ''));
+        Router.pop();
+      };
+      return {
+        title: params.mode === 'rename' ? 'Rename Playlist' : 'New Playlist', type: 'list',
+        input: { placeholder: 'Playlist name', label: 'Playlist name', onSubmit: save },
+        items: [{ label: 'Save', right: '\u2713', action: save }, { label: 'Cancel', action: () => Router.pop() }]
+      };
+    },
+    pickpl: (params) => ({
+      title: 'Add to Playlist', type: 'list',
+      items: [{ label: '+ New playlist with this track', action: () => Router.push('name', { mode: 'new', track: params.track }) }]
+        .concat(Store.state.playlists.map(p => ({
+          label: p.name, right: String(p.tracks.length),
+          action: () => { UI.toast(Store.addToPlaylist(p.id, params.track) ? 'Added to \u201C' + p.name + '\u201D' : 'Already in \u201C' + p.name + '\u201D'); Router.pop(); }
+        })))
+    }),
+
+    track: (params) => {
+      const t = params.track, ctx = params.ctx || {};
+      const saved = Store.inLibrary(t.id);
+      const items = [{ info: true, label: Utils.title(t) + ' \u2014 ' + Utils.artist(t) }];
+      if (ctx.type === 'queue') {
+        items.push({ label: 'Play now', right: '\u25B6', action: () => { App.playUid(ctx.uid, { user: true }); Router.push('now'); } });
+      } else {
+        items.push({ label: 'Play now', right: '\u25B6', action: () => { const uid = Queue.add([t], 'next'); App.playUid(uid, { user: true }); Router.push('now'); } });
+        items.push({ label: 'Play next', action: () => { Queue.add([t], 'next'); UI.toast('Will play next'); } });
+        items.push({ label: 'Add to queue', action: () => { Queue.add([t], 'end'); UI.toast('Added to queue'); } });
+      }
+      items.push(saved
+        ? { label: 'Remove from library', action: () => { Store.removeFromLibrary(t.id); UI.toast('Removed from library'); Router.refresh(); } }
+        : { label: 'Save to library', action: () => { Store.addToLibrary([t]); UI.toast('Saved to library'); Router.refresh(); } });
+      items.push({ label: 'Add to playlist\u2026', right: '›', action: () => Router.push('pickpl', { track: t }) });
+      if (ctx.type === 'playlist') {
+        items.push({ label: 'Move up', action: () => { ctx.index = Store.moveInPlaylist(ctx.plId, ctx.index, -1); UI.toast('Moved up'); } });
+        items.push({ label: 'Move down', action: () => { ctx.index = Store.moveInPlaylist(ctx.plId, ctx.index, 1); UI.toast('Moved down'); } });
+        items.push({ label: 'Remove from playlist', danger: true, action: () => { Store.removeFromPlaylist(ctx.plId, ctx.index); UI.toast('Removed from playlist'); Router.pop(); } });
+      }
+      if (ctx.type === 'queue') {
+        items.push({ label: 'Move up', action: () => { Queue.move(ctx.uid, -1); UI.toast('Moved up'); } });
+        items.push({ label: 'Move down', action: () => { Queue.move(ctx.uid, 1); UI.toast('Moved down'); } });
+        items.push({ label: 'Remove from queue', danger: true, action: () => {
+          if (Store.state.queue.current === ctx.uid) { UI.toast('That track is current \u2014 skip it first.'); return; }
+          Queue.remove(ctx.uid); UI.toast('Removed from queue'); Router.pop();
+        } });
+      }
+      return { title: 'Track', type: 'list', items };
+    },
+
+    queue: () => {
+      const q = Store.state.queue;
+      return {
+        title: 'Queue', type: 'list', items: [
+          { label: 'Shuffle: ' + onOff(q.shuffle), action: () => { Queue.setShuffle(!q.shuffle); UI.toast('Shuffle ' + onOff(q.shuffle).toLowerCase()); Router.refresh(); } },
+          { label: 'Repeat: ' + { off: 'Off', all: 'All', one: 'One' }[q.repeat], action: () => { Queue.cycleRepeat(); Router.refresh(); } },
+          { label: 'Clear queue (keep current)', danger: true, action: () => { Queue.clear(); UI.toast('Queue cleared'); Router.refresh(); } }
+        ].concat(q.items.map((it, i) => trackRow(it.track, { type: 'queue', uid: it.uid }, {
+          label: (it.uid === q.current ? '\u25B6 ' : (i + 1) + '. ') + Utils.title(it.track), now: it.uid === q.current
+        })))
+      };
+    },
+
+    settings: () => {
+      const s = Store.state.settings;
+      const sl = Settings.sleepRemaining();
+      return {
+        title: 'Settings', type: 'list', items: [
+          { label: '\u24D8 YouTube Music: link & ID import only', right: '›', action: () => Router.push('ytmusic') },
+          { label: 'YouTube API key', right: s.apiKey ? 'Set ›' : 'None ›', action: () => Router.push('apikey', {}) },
+          { label: 'Theme', right: (THEMES.find(t => t.id === s.theme) || THEMES[0]).name + ' ›', action: () => Router.push('theme') },
+          { label: 'Playback speed', right: s.speed + 'x ›', action: () => Router.push('speed') },
+          { label: 'Sleep timer', right: (sl ? sl + 'm' : 'Off') + ' ›', action: () => Router.push('sleep') },
+          { label: 'Music-only search', right: onOff(s.musicOnly), action: () => { s.musicOnly = !s.musicOnly; Store.save(); Router.refresh(); } },
+          { label: 'Haptics (mobile)', right: onOff(s.haptics), action: () => { s.haptics = !s.haptics; Store.save(); Router.refresh(); } },
+          { label: 'Export library (JSON)', action: () => Settings.exportLibrary() },
+          { label: 'Import library (JSON)', action: () => Settings.importLibrary() },
+          { label: 'Show welcome screen', action: () => Router.push('onboarding') },
+          { label: 'Reset all data', danger: true, action: () => Router.push('confirm', { message: 'Erase library, playlists, queue and key?', confirmLabel: 'Erase everything', onConfirm: () => {
+            Store.reset(); App.loadDemo(); Queue.reinit(); Settings.applyTheme('neon'); Settings.setSleep(0);
+            const c = Queue.current(); if (c) PlayerController.load(c.track, false);
+            Router.home(); UI.toast('All data reset.');
+          } }) }
+        ]
+      };
+    },
+    apikey: (params, entry) => {
+      const s = Store.state.settings;
+      if (!params.init) { params.init = true; entry.inputValue = s.apiKey; }
+      const save = () => {
+        const k = entry.inputValue.trim();
+        if (k && !/^[A-Za-z0-9_-]{20,100}$/.test(k)) { UI.toast('That doesn\u2019t look like an API key.', 'error'); return; }
+        s.apiKey = k; Store.saveNow();
+        UI.toast(k ? 'Key saved in this browser only.' : 'Key cleared.'); Router.refresh();
+      };
+      const test = async () => {
+        const k = entry.inputValue.trim() || s.apiKey;
+        if (!k) { UI.toast('Paste a key first.'); return; }
+        params.msg = 'Testing\u2026'; Router.refresh();
+        try { await YouTubeService.testKey(k); params.msg = '\u2713 Key works (1 unit used)'; UI.toast('\u2713 The key works. Remember to Save it.'); }
+        catch (e) { params.msg = '\u2717 ' + ((e && e.message) || 'Test failed'); UI.toast(params.msg, 'error', 5000); }
+        if (Router.top() === entry) Router.refresh();
+      };
+      return {
+        title: 'API Key', type: 'list',
+        input: { placeholder: 'YouTube Data API v3 key', label: 'YouTube Data API v3 key', type: params.show ? 'text' : 'password', onSubmit: save },
+        items: [
+          { label: 'Save key', right: '\u2713', action: save },
+          { label: 'Test key', action: test },
+          { label: params.show ? 'Hide key' : 'Show key', action: () => { params.show = !params.show; Router.refresh(); } },
+          { label: 'Clear key', danger: true, action: () => { entry.inputValue = ''; if (entry.inputEl) entry.inputEl.value = ''; save(); } },
+          { label: 'How to get a key', right: '›', action: () => Router.push('keyhelp') },
+          { info: true, label: params.msg || (s.apiKey ? 'A key is saved (localStorage)' : 'No key saved \u2014 search is off') }
+        ]
+      };
+    },
+    keyhelp: () => ({
+      title: 'Get an API Key', type: 'text', hint: 'Wheel / \u2191\u2193 scroll \u00B7 Menu back',
+      paras: [
+        { h: 'Free key from Google Cloud Console' },
+        '1. Open console.cloud.google.com and create or select a project.',
+        '2. APIs & Services \u2192 Library \u2192 enable \u201CYouTube Data API v3\u201D.',
+        '3. APIs & Services \u2192 Credentials \u2192 Create credentials \u2192 API key.',
+        '4. Recommended: restrict it to YouTube Data API v3 and an HTTP referrer such as http://localhost:8000/* (referrer-restricted keys do not work from file://).',
+        '5. Paste it on the API Key screen, press Test key, then Save key.',
+        'The key stays in this browser\u2019s localStorage, is never logged and is excluded from exports. Quota: 10,000 units/day; one search \u2248 100 units.'
+      ]
+    }),
+    ytmusic: () => ({
+      title: 'YouTube Music', type: 'text', hint: 'Wheel / \u2191\u2193 scroll \u00B7 Menu back',
+      paras: [
+        { h: 'Supported via link & ID import' },
+        'YouTube Music is supported via link and ID import \u2014 not through its private API (there is no official YouTube Music API).',
+        'Paste music.youtube.com watch, playlist or album links (Share \u2192 Copy link) into Add by Link. Songs play through the standard YouTube embedded player.',
+        'Album \u201Cbrowse\u201D pages (\u2026/browse/MPREb\u2026) can\u2019t be embedded; use the album\u2019s playlist link (list=OLAK5uy_\u2026).',
+        'YouTube Music-only features (your library, likes, lyrics, personal mixes, Premium background/ad-free play) are not available.'
+      ]
+    }),
+    theme: () => ({
+      title: 'Theme', type: 'list',
+      items: THEMES.map(t => ({ label: t.name, right: Store.state.settings.theme === t.id ? '\u2713' : '', action: () => { Settings.applyTheme(t.id); Router.refresh(); } }))
+    }),
+    speed: () => ({
+      title: 'Playback Speed', type: 'list',
+      items: SPEEDS.map(r => ({ label: r + 'x' + (r === 1 ? ' (normal)' : ''), right: Store.state.settings.speed === r ? '\u2713' : '', action: () => { Settings.setSpeed(r); Router.refresh(); } }))
+    }),
+    sleep: () => {
+      const rem = Settings.sleepRemaining();
+      return {
+        title: 'Sleep Timer', type: 'list',
+        items: [{ info: true, label: rem ? 'Pausing in ' + rem + ' min' : 'Timer is off' }].concat(SLEEP_OPTIONS.map(m => ({
+          label: m ? m + ' minutes' : 'Off', action: () => { Settings.setSleep(m); UI.toast(m ? 'Sleep in ' + m + ' minutes' : 'Sleep timer off'); Router.refresh(); }
+        })))
+      };
+    },
+    confirm: (params) => ({
+      title: 'Confirm', type: 'list',
+      items: [{ info: true, label: params.message }, { label: 'Cancel', action: () => Router.pop() }, { label: params.confirmLabel || 'OK', danger: true, action: () => params.onConfirm() }]
+    })
+  };
+
+  /* ==========================================================
+     ROUTER (screen stack + slide transitions)
+     ========================================================== */
+  const Router = (() => {
+    const stack = [];
+    const make = (id, params) => ({ id, params: params || {}, sel: -1, top: 0, def: null, view: null, inputEl: null, inputValue: '', navigated: false });
+    const top = () => stack[stack.length - 1];
+    function build(entry) { const fn = Screens[entry.id] || Screens.main; entry.def = fn(entry.params, entry); return entry.def; }
+    function leave() { const t = top(); if (t && t.def && t.def.onLeave) t.def.onLeave(); if (t && t.id === 'now') UI.setScrub(false); }
+    return {
+      top, build,
+      start() { stack.length = 0; stack.push(make('main')); UI.mount(top(), 0); if (!Store.state.settings.onboarded) { stack.push(make('onboarding')); UI.mount(top(), 0); } },
+      push(id, params) { leave(); stack.push(make(id, params)); UI.mount(top(), 1); },
+      pop() { if (stack.length <= 1) return false; leave(); stack.pop(); UI.mount(top(), -1); return true; },
+      home() { if (stack.length <= 1) { this.refresh(); return; } leave(); stack.length = 1; UI.mount(top(), -1); },
+      back() { if (!this.pop()) UI.toast('Main menu'); },
+      refresh() { const t = top(); if (t) UI.refreshScreen(t); },
+      step(d) {
+        const t = top(); if (!t || !t.def) return;
+        if (t.def.type === 'list') UI.moveSel(t, d);
+        else if (t.def.type === 'now') UI.nowStep(d);
+        else if (t.def.type === 'text') UI.textScroll(t, d);
+      },
+      select() {
+        const t = top(); if (!t || !t.def) return;
+        if (t.def.type === 'list') {
+          const it = t.def.items[t.sel];
+          if (it && !it.info && it.action) { try { it.action(); } catch (e) { UI.toast('Something went wrong.', 'error'); } if (top() === t) this.refresh(); }
+        } else if (t.def.type === 'now') UI.setScrub(!UI.scrub);
+        else if (t.def.type === 'text' && t.def.primary) t.def.primary();
+      }
+    };
+  })();
+
+  /* ==========================================================
+     UI RENDERERS (header, side panel, lists, now playing, toast, visualizer)
+     ========================================================== */
+  const UI = (() => {
+    const $ = id => document.getElementById(id);
+    const { el } = Utils;
+    let panel, toastEl, toastT = null, currentView = null, now = null, scrub = false, lastThumb = '';
+    const vizBars = [], vizH = [];
+    let lastViz = 0;
+    const ICON = {   // static, trusted SVG markup only
+      play: '<svg viewBox="0 0 12 12"><path fill="currentColor" d="M2 1l9 5-9 5z"/></svg>',
+      pause: '<svg viewBox="0 0 12 12"><path fill="currentColor" d="M2 1h3v10H2zm5 0h3v10H7z"/></svg>',
+      stop: '<svg viewBox="0 0 12 12"><rect fill="currentColor" x="2" y="2" width="8" height="8" rx="1"/></svg>',
+      vol: '<svg viewBox="0 0 12 12"><path fill="currentColor" d="M1 4h2l3-3v10L3 8H1zM8 3.5a3.5 3.5 0 010 5M9.5 2a5.5 5.5 0 010 8" stroke="currentColor" stroke-width="1" fill-rule="evenodd"/></svg>'
+    };
+
+    function init() {
+      panel = $('panel'); toastEl = $('toast');
+      const viz = $('viz');
+      for (let i = 0; i < VIZ_BARS; i++) {
+        const b = el('i');
+        b.style.setProperty('--bc', 'var(' + VIZ_COLORS[i % VIZ_COLORS.length] + ')');
+        viz.appendChild(b); vizBars.push(b); vizH.push(0.06);
+      }
+      $('thumb').addEventListener('error', () => { $('thumb').hidden = true; });
+      $('thumb').addEventListener('load', () => { $('thumb').hidden = false; });
+      PlayerController.on(() => { refreshChrome(); if (now) updateNow(); });
+      setInterval(tick, 250);
+      requestAnimationFrame(vizLoop);
+    }
+
+    /* ---------- mounting & transitions ---------- */
+    function mount(entry, dir) {
+      Router.build(entry);
+      const v = buildView(entry);
+      const old = currentView;
+      if (dir && old && !Utils.reduced()) {
+        v.classList.add(dir > 0 ? 'from-right' : 'from-left');
+        panel.insertBefore(v, toastEl);
+        void v.offsetWidth;                                   // force reflow so the transition runs
+        v.classList.remove('from-right', 'from-left');
+        old.classList.add(dir > 0 ? 'to-left' : 'to-right');
+        setTimeout(() => old.remove(), 260);
+      } else {
+        if (old) old.remove();
+        panel.insertBefore(v, toastEl);
+      }
+      currentView = v; entry.view = v;
+      afterRender(entry);
+      if (entry.inputEl && !matchMedia('(pointer: coarse)').matches) setTimeout(() => { try { entry.inputEl.focus({ preventScroll: true }); } catch (e) { /* ignore */ } }, 60);
+      refreshChrome();
+    }
+    function buildView(entry) {
+      const def = entry.def;
+      now = null;
+      if (def.type === 'now') return buildNow();
+      if (def.type === 'text') {
+        const tv = el('div', { class: 'textview', tabindex: '-1' });
+        def.paras.forEach(p => tv.appendChild(typeof p === 'string' ? el('p', { text: p }) : el('h3', { text: p.h })));
+        entry.textEl = tv;
+        return el('div', { class: 'view' }, tv, el('div', { class: 'hint', text: def.hint || 'Center select \u00B7 Menu back' }));
+      }
+      const view = el('div', { class: 'view' });
+      entry.inputEl = null;
+      if (def.input) {
+        const inp = el('input', { class: 'inp', type: def.input.type || 'text', placeholder: def.input.placeholder || '', 'aria-label': def.input.label || def.input.placeholder || 'Input', autocomplete: 'off', autocapitalize: 'off', spellcheck: 'false', enterkeyhint: 'go' });
+        inp.value = entry.inputValue;
+        inp.addEventListener('input', () => {
+          entry.inputValue = inp.value; entry.navigated = false;
+          const d = entry.def.input; if (d && d.onInput) d.onInput(inp.value, entry); else Router.refresh();
+        });
+        inp.addEventListener('keydown', e => {
+          if (e.key === 'Enter') {
+            e.preventDefault(); e.stopPropagation();
+            if (entry.navigated) Router.select();
+            else { const d = entry.def.input; if (d && d.onSubmit) d.onSubmit(inp.value, entry); else Router.select(); }
+          } else if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+            e.preventDefault(); e.stopPropagation(); entry.navigated = true; Router.step(e.key === 'ArrowDown' ? 1 : -1);
+          } else if (e.key === 'Escape') {
+            e.preventDefault(); e.stopPropagation(); inp.blur(); Router.back();
+          } else e.stopPropagation();   // let typing (incl. Space, M, Backspace) work normally
+        });
+        entry.inputEl = inp; view.appendChild(inp);
+      }
+      entry.listEl = el('div', { class: 'list', role: 'listbox', 'aria-label': def.title });
+      entry.sbEl = el('div', { class: 'sb', hidden: true }, el('i'));
+      view.appendChild(entry.listEl); view.appendChild(entry.sbEl);
+      if (entry.sel < 0) entry.sel = firstSelectable(def.items);
+      renderRows(entry);
+      return view;
+    }
+    function firstSelectable(items) { const i = items.findIndex(it => !it.info); return i < 0 ? 0 : i; }
+    function refreshScreen(entry) {
+      Router.build(entry);
+      const def = entry.def;
+      if (def.type === 'list') {
+        if (entry.inputEl && def.input) {
+          const t = def.input.type || 'text';
+          if (entry.inputEl.type !== t) entry.inputEl.type = t;
+          entry.inputEl.placeholder = def.input.placeholder || '';
+          if (entry.inputEl.value !== entry.inputValue) entry.inputEl.value = entry.inputValue;
+        }
+        renderRows(entry);
+      } else if (def.type === 'now') updateNow();
+      refreshChrome();
+    }
+    function refresh() { Router.refresh(); }
+
+    /* ---------- list rendering (6 visible rows, scroll indicator, marquee) ---------- */
+    function renderRows(entry) {
+      const def = entry.def, items = def.items, vis = def.input ? 5 : 6;
+      if (!entry.listEl) return;
+      entry.sel = Utils.clamp(entry.sel, 0, Math.max(0, items.length - 1));
+      if (items[entry.sel] && items[entry.sel].info) entry.sel = firstSelectable(items);
+      if (entry.sel < entry.top) entry.top = entry.sel;
+      if (entry.sel >= entry.top + vis) entry.top = entry.sel - vis + 1;
+      if (entry.top > 0 && items[entry.top - 1] && items[entry.top - 1].info && entry.top - 1 <= entry.sel && entry.sel < entry.top - 1 + vis) entry.top--;
+      entry.top = Utils.clamp(entry.top, 0, Math.max(0, items.length - vis));
+      const rows = [];
+      for (let i = entry.top; i < Math.min(items.length, entry.top + vis); i++) {
+        const it = items[i], sel = i === entry.sel;
+        const cls = 'row' + (sel ? ' sel' : '') + (it.info ? ' info' : '') + (it.now ? ' now' : '') + (it.danger ? ' danger' : '');
+        const r = el('div', { class: cls, role: 'option', 'aria-selected': sel ? 'true' : 'false', 'aria-disabled': it.info ? 'true' : null },
+          el('span', { class: 'lbl' }, el('span', { class: 'txt', text: it.label })),
+          it.right ? el('span', { class: 'right', text: it.right }) : null);
+        if (!it.info) r.addEventListener('click', () => { entry.sel = i; Router.select(); });
+        rows.push(r);
+      }
+      entry.listEl.replaceChildren(...rows);
+      const sb = entry.sbEl;
+      if (items.length > vis) {
+        sb.hidden = false;
+        sb.style.top = (def.input ? 26 : 2) + 'px';
+        const h = Math.max(10, (vis / items.length) * 100), t = (entry.top / items.length) * 100;
+        sb.firstChild.style.height = h + '%'; sb.firstChild.style.top = t + '%';
+      } else sb.hidden = true;
+      afterRender(entry);
+    }
+    function afterRender(entry) {
+      if (!entry.listEl || !entry.def || entry.def.type !== 'list') return;
+      const selRow = entry.listEl.querySelector('.row.sel');
+      if (selRow) { marquee(selRow.querySelector('.lbl'), selRow.querySelector('.txt')); announce(selRow.textContent); }
+    }
+    function marquee(box, txt) {
+      if (!box || !txt) return;
+      txt.classList.remove('mq'); box.classList.remove('mqp');
+      requestAnimationFrame(() => {
+        const over = box.scrollWidth - box.clientWidth;
+        if (over > 2 && !Utils.reduced()) {
+          box.classList.add('mqp');
+          txt.style.setProperty('--mq', -(over + 8) + 'px');
+          txt.style.setProperty('--mqd', Math.max(2.5, (over + 8) / 28) + 's');
+          txt.classList.add('mq');
+        }
+      });
+    }
+    function moveSel(entry, d) {
+      const items = entry.def.items; if (!items.length) return;
+      let i = entry.sel;
+      do { i += d; } while (i >= 0 && i < items.length && items[i].info);
+      if (i < 0 || i >= items.length) return;
+      entry.sel = i; renderRows(entry);
+    }
+    function textScroll(entry, d) { if (entry.textEl) entry.textEl.scrollTop += d * 18; }
+
+    /* ---------- Now Playing ---------- */
+    function buildNow() {
+      const title = el('div', { class: 'np-title' }, el('span', { class: 'txt' }));
+      const artist = el('div', { class: 'np-artist' });
+      const fill = el('div', { class: 'fill' }), knob = el('div', { class: 'knob' });
+      const bar = el('div', { class: 'np-bar', role: 'slider', 'aria-label': 'Seek', 'aria-valuemin': '0', 'aria-valuemax': '0', 'aria-valuenow': '0' }, fill, knob);
+      const elT = el('span'), remT = el('span');
+      const vfill = el('i'), vbar = el('div', { class: 'vbar', role: 'slider', 'aria-label': 'Volume', 'aria-valuemin': '0', 'aria-valuemax': '100' }, vfill);
+      const vtxt = el('span', { class: 'vtxt' });
+      const volIco = el('span', { 'aria-hidden': 'true', style: 'display:inline-flex;color:var(--c4)' }); volIco.innerHTML = ICON.vol;
+      const modes = el('span', { class: 'modes', 'aria-label': 'Playback modes' });
+      const hint = el('div', { class: 'np-hint' });
+      const v = el('div', { class: 'view np' }, title, artist, bar, el('div', { class: 'np-times' }, elT, remT), el('div', { class: 'np-row' }, volIco, vbar, vtxt, modes), hint);
+      now = { v, title, artist, fill, knob, bar, elT, remT, vfill, vbar, vtxt, modes, hint, lastId: null };
+      dragSlider(bar, f => { const { dur } = PlayerController.times(); if (dur > 0) PlayerController.seekTo(f * dur); updateNow(); });
+      dragSlider(vbar, f => setVolume(Math.round(f * 100)));
+      v.classList.toggle('scrub', scrub);
+      updateNow();
+      return v;
+    }
+    function dragSlider(node, onFrac) {
+      node.addEventListener('pointerdown', e => {
+        e.preventDefault();
+        try { node.setPointerCapture(e.pointerId); } catch (err) { /* ignore */ }
+        const at = ev => { const r = node.getBoundingClientRect(); onFrac(Utils.clamp((ev.clientX - r.left) / r.width, 0, 1)); };
+        at(e);
+        const mv = ev => at(ev);
+        const up = () => { node.removeEventListener('pointermove', mv); node.removeEventListener('pointerup', up); node.removeEventListener('pointercancel', up); };
+        node.addEventListener('pointermove', mv); node.addEventListener('pointerup', up); node.addEventListener('pointercancel', up);
+      });
+    }
+    function updateNow() {
+      if (!now || !now.v.isConnected) return;
+      const c = Queue.current(), t = c ? c.track : null, q = Store.state.queue, s = Store.state.settings;
+      const label = t ? Utils.title(t) : 'Nothing queued';
+      const txt = now.title.firstChild;
+      if (txt.textContent !== label) { txt.textContent = label; marquee(now.title, txt); }
+      now.artist.textContent = t ? Utils.artist(t) : 'Use Add by Link to start';
+      const { cur, dur } = PlayerController.times();
+      const f = dur > 0 ? Utils.clamp(cur / dur, 0, 1) : 0;
+      now.fill.style.width = (f * 100) + '%'; now.knob.style.left = (f * 100) + '%';
+      now.elT.textContent = Utils.fmt(cur); now.remT.textContent = '-' + Utils.fmt(Math.max(0, dur - cur));
+      now.bar.setAttribute('aria-valuemax', String(Math.round(dur))); now.bar.setAttribute('aria-valuenow', String(Math.round(cur)));
+      now.bar.setAttribute('aria-valuetext', Utils.fmt(cur) + ' of ' + Utils.fmt(dur));
+      const muted = PlayerController.isMuted();
+      now.vfill.style.width = (muted ? 0 : s.volume) + '%';
+      now.vtxt.textContent = muted ? 'mute' : String(s.volume);
+      now.vbar.setAttribute('aria-valuenow', String(s.volume));
+      const sl = Settings.sleepRemaining();
+      const chips = [
+        ['\u21C4', q.shuffle, 'Shuffle ' + onOff(q.shuffle)],
+        [q.repeat === 'one' ? '\u21BB1' : '\u21BB', q.repeat !== 'off', 'Repeat ' + q.repeat],
+        [s.speed + 'x', s.speed !== 1, 'Speed ' + s.speed],
+        [sl ? 'z' + sl + 'm' : 'z', !!sl, sl ? 'Sleep in ' + sl + ' minutes' : 'Sleep off']
+      ];
+      now.modes.replaceChildren(...chips.map(([tx, on, lab]) => el('span', { class: on ? 'on' : '', title: lab, text: tx })));
+      now.hint.textContent = scrub ? 'SCRUB \u00B7 turn to seek \u00B7 center exits' : 'Wheel: volume \u00B7 Center: scrub';
+      now.v.classList.toggle('scrub', scrub);
+    }
+    function setVolume(v) {
+      v = Utils.clamp(Math.round(v), 0, 100);
+      Store.state.settings.volume = v; Store.save();
+      PlayerController.setVolume(v); updateNow(); refreshChrome();
+    }
+    function nowStep(d) {
+      if (scrub) { PlayerController.seekBy(d * 5); setTimeout(updateNow, 60); }
+      else setVolume(Store.state.settings.volume + d * 3);
+    }
+    function setScrub(on) { scrub = !!on; updateNow(); }
+
+    /* ---------- header + side panel ---------- */
+    function refreshChrome() {
+      const top = Router.top();
+      $('hdrTitle').textContent = top && top.def ? top.def.title : 'iPod Neo';
+      const st = PlayerController.state;
+      const hs = $('hdrState');
+      hs.innerHTML = st === 'playing' ? ICON.play : (st === 'paused' || st === 'ready' || st === 'buffering' ? ICON.pause : ICON.stop);
+      const b = $('batt');
+      let cls = 'idle', lab = 'Ready';
+      if (!navigator.onLine) { cls = 'off'; lab = 'Offline'; }
+      else if (st === 'loading' || st === 'buffering' || App.busy) { cls = 'loading'; lab = st === 'buffering' ? 'Buffering' : 'Loading'; }
+      else if (st === 'error') { cls = 'err'; lab = 'Error'; }
+      else if (st === 'playing') { cls = ''; lab = 'Playing'; }
+      b.className = 'batt ' + cls;
+      b.setAttribute('aria-label', 'Player status: ' + lab); b.title = lab;
+      $('hdrSleep').hidden = !Settings.sleepRemaining();
+      $('hdrMute').hidden = !PlayerController.isMuted();
+      const labels = { loading: 'LOADING', idle: 'IDLE', ready: 'READY', playing: 'PLAYING', paused: 'PAUSED', buffering: 'BUFFER', ended: 'ENDED', error: 'ERROR' };
+      $('stLabel').textContent = navigator.onLine ? (labels[st] || '') : 'OFFLINE';
+      const c = Queue.current();
+      $('count').textContent = c ? (Queue.idxOf(c.uid) + 1) + ' of ' + Queue.length() : '0 of 0';
+      const id = c ? c.track.id : '';
+      if (id !== lastThumb) { lastThumb = id; const img = $('thumb'); if (id) img.src = Utils.thumb(id, 'mqdefault'); else { img.hidden = true; img.removeAttribute('src'); } }
+    }
+    function tick() {
+      if (now) updateNow();
+      if (PlayerController.state === 'playing') { const { cur, dur } = PlayerController.times(); MediaSessionBridge.position(cur, dur, Store.state.settings.speed); }
+    }
+
+    /* ---------- visualizer (DECORATIVE ONLY) ----------
+       The YouTube iframe exposes no audio data, so these bars are simulated from the
+       playback state (playing = lively random motion, otherwise they settle). */
+    function vizLoop(ts) {
+      requestAnimationFrame(vizLoop);
+      if (document.hidden) return;
+      const red = Utils.reduced();
+      if (ts - lastViz < (red ? 450 : 70)) return;
+      lastViz = ts;
+      const playing = PlayerController.state === 'playing';
+      for (let i = 0; i < VIZ_BARS; i++) {
+        let target = 0.06;
+        if (playing) {
+          target = red ? 0.3 + Math.random() * 0.15
+            : Utils.clamp(0.4 + 0.3 * Math.sin(ts / 520 + i * 0.75) + (Math.random() - 0.5) * 0.65, 0.08, 1);
+        }
+        vizH[i] += (target - vizH[i]) * (playing ? 0.55 : 0.2);
+        vizBars[i].style.transform = 'scaleY(' + vizH[i].toFixed(3) + ')';
+      }
+    }
+
+    /* ---------- toast / art message / a11y ---------- */
+    function toast(msg, kind, ms) {
+      if (!toastEl) return;
+      toastEl.textContent = String(msg);
+      toastEl.className = 'toast show' + (kind === 'error' ? ' error' : '');
+      clearTimeout(toastT);
+      toastT = setTimeout(() => { toastEl.className = 'toast'; }, ms || 2600);
+    }
+    function setArtMessage(msg) { const m = $('artMsg'); if (m) m.textContent = msg || ''; }
+    let annT = null;
+    function announce(text) { clearTimeout(annT); annT = setTimeout(() => { const s = $('sr'); if (s) s.textContent = text; }, 150); }
+
+    return {
+      init, mount, refreshScreen, refresh, refreshChrome, moveSel, textScroll, nowStep, setScrub,
+      toast, setArtMessage, setVolume,
+      get scrub() { return scrub; }
+    };
+  })();
+
+  /* ==========================================================
+     WHEEL CONTROLLER (circular drag via pointer events + buttons)
+     ========================================================== */
+  const WheelController = (() => {
+    let wheel, active = null, dragging = false, acc = 0, lastAngle = 0, total = 0, vel = 0, lastMoveT = 0, pType = 'mouse';
+    let suppressUntil = 0, lpTimer = null, rpTimer = null, wAcc = 0, wT = null;
+    function buildArcs() {
+      const NS = 'http://www.w3.org/2000/svg', svg = document.getElementById('wheelSvg');
+      const cx = 90, cy = 90, r = 80;
+      [['--k1', -90], ['--k2', 0], ['--k3', 90], ['--k4', 180]].forEach(([v, a]) => {
+        const a1 = (a - 36) * Math.PI / 180, a2 = (a + 36) * Math.PI / 180;
+        const p = document.createElementNS(NS, 'path');
+        p.setAttribute('d', 'M ' + (cx + r * Math.cos(a1)).toFixed(2) + ' ' + (cy + r * Math.sin(a1)).toFixed(2) +
+          ' A ' + r + ' ' + r + ' 0 0 1 ' + (cx + r * Math.cos(a2)).toFixed(2) + ' ' + (cy + r * Math.sin(a2)).toFixed(2));
+        p.setAttribute('class', 'arc');
+        p.style.stroke = 'var(' + v + ')'; p.style.color = 'var(' + v + ')';
+        svg.appendChild(p);
+      });
+    }
+    function geo(e) {
+      const r = wheel.getBoundingClientRect(), cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+      return { a: Math.atan2(e.clientY - cy, e.clientX - cx) * 180 / Math.PI, d: Math.hypot(e.clientX - cx, e.clientY - cy), r: r.width / 2 };
+    }
+    function clearTimers() { clearTimeout(lpTimer); clearInterval(rpTimer); lpTimer = rpTimer = null; }
+    function act(zone) {
+      if (zone === 'menu') Router.back();
+      else if (zone === 'next') App.next();
+      else if (zone === 'prev') App.prev();
+      else if (zone === 'play') App.toggle();
+      else if (zone === 'center') Router.select();
+    }
+    function long(zone) {
+      if (zone === 'menu') Router.home();
+      else if (zone === 'next') { PlayerController.seekBy(10); UI.toast('+10 s'); }
+      else if (zone === 'prev') { PlayerController.seekBy(-10); UI.toast('\u221210 s'); }
+    }
+    function down(e) {
+      if (e.pointerType === 'mouse' && e.button !== 0) return;
+      const g = geo(e);
+      if (g.d < g.r * 0.37 || g.d > g.r * 1.04) return;          // centre button / outside ring: no rotation
+      active = e.pointerId; pType = e.pointerType || 'mouse';
+      dragging = false; acc = 0; total = 0; vel = 0; lastAngle = g.a; lastMoveT = performance.now();
+      wheel.style.setProperty('--ang', g.a + 'deg');
+      const zEl = e.target.closest && e.target.closest('[data-zone]');
+      const z = zEl && zEl.dataset.zone;
+      if (z === 'menu' || z === 'next' || z === 'prev') {
+        lpTimer = setTimeout(() => {
+          if (dragging) return;
+          suppressUntil = Infinity; long(z); Utils.vibrate(15);
+          if (z !== 'menu') rpTimer = setInterval(() => long(z), 450);
+        }, 550);
+      }
+      window.addEventListener('pointermove', move);
+      window.addEventListener('pointerup', up);
+      window.addEventListener('pointercancel', up);
+    }
+    function move(e) {
+      if (e.pointerId !== active) return;
+      const g = geo(e);
+      let d = g.a - lastAngle;
+      if (d > 180) d -= 360; else if (d < -180) d += 360;
+      lastAngle = g.a; total += Math.abs(d);
+      const t = performance.now(), dt = Math.max(1, t - lastMoveT); lastMoveT = t;
+      vel = vel * 0.7 + (Math.abs(d) / dt) * 0.3;               // deg/ms, smoothed
+      wheel.style.setProperty('--ang', g.a + 'deg');
+      if (!dragging && total > 9) { dragging = true; clearTimers(); suppressUntil = Infinity; wheel.classList.add('dragging'); }
+      if (!dragging) return;
+      acc += d;
+      // ~15° per step when slow; smooth acceleration down to ~6° per step when spun fast
+      const stepDeg = Utils.clamp(15 - vel * 12, 6, 15);
+      while (Math.abs(acc) >= stepDeg) {
+        const s = Math.sign(acc); acc -= s * stepDeg;
+        Router.step(s);                                          // clockwise = down / volume up
+        if (pType !== 'mouse') Utils.vibrate(5);
+      }
+    }
+    function up(e) {
+      if (e.pointerId !== active) return;
+      active = null; clearTimers();
+      window.removeEventListener('pointermove', move);
+      window.removeEventListener('pointerup', up);
+      window.removeEventListener('pointercancel', up);
+      wheel.classList.remove('dragging');
+      if (suppressUntil === Infinity) suppressUntil = performance.now() + 400;   // swallow the click that follows a drag / long-press
+      dragging = false;
+    }
+    function init() {
+      wheel = document.getElementById('wheel');
+      buildArcs();
+      wheel.addEventListener('pointerdown', down);
+      wheel.addEventListener('click', e => { if (performance.now() < suppressUntil) { e.stopPropagation(); e.preventDefault(); suppressUntil = 0; } }, true);
+      wheel.querySelectorAll('[data-zone]').forEach(b => b.addEventListener('click', () => act(b.dataset.zone)));
+      wheel.addEventListener('contextmenu', e => e.preventDefault());
+      // Mouse/touch presses don't steal keyboard focus (so Enter/Space keep their global meaning);
+      // keyboard users can still Tab to every wheel button.
+      wheel.addEventListener('mousedown', e => e.preventDefault());
+      // Mouse wheel over the device also scrolls
+      document.getElementById('device').addEventListener('wheel', e => {
+        if (e.ctrlKey) return;
+        e.preventDefault();
+        const k = e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? 120 : 1;
+        wAcc += e.deltaY * k;
+        clearTimeout(wT); wT = setTimeout(() => { wAcc = 0; }, 220);
+        while (Math.abs(wAcc) >= 40) { const s = Math.sign(wAcc); wAcc -= s * 40; Router.step(s); }
+      }, { passive: false });
+    }
+    return { init };
+  })();
+
+  /* ==========================================================
+     KEYBOARD
+     ========================================================== */
+  const Keyboard = {
+    init() {
+      document.addEventListener('keydown', e => {
+        if (e.defaultPrevented || e.altKey || e.ctrlKey || e.metaKey) return;
+        const tag = (e.target && e.target.tagName) || '';
+        if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;     // inputs handle their own keys
+        const onButton = tag === 'BUTTON' || tag === 'A';
+        switch (e.key) {
+          case 'ArrowUp': e.preventDefault(); Router.step(-1); break;
+          case 'ArrowDown': e.preventDefault(); Router.step(1); break;
+          case 'Enter': if (onButton) return; e.preventDefault(); Router.select(); break;
+          case 'Escape': case 'Backspace': e.preventDefault(); Router.back(); break;
+          case ' ': case 'Spacebar': if (onButton) return; e.preventDefault(); App.toggle(); break;
+          case 'ArrowLeft': e.preventDefault(); if (e.shiftKey) App.prev(); else PlayerController.seekBy(-5); break;
+          case 'ArrowRight': e.preventDefault(); if (e.shiftKey) App.next(); else PlayerController.seekBy(5); break;
+          case 'm': case 'M': { const m = PlayerController.toggleMute(); UI.toast(m ? 'Muted' : 'Unmuted'); setTimeout(() => UI.refresh(), 80); break; }
+          default: return;
+        }
+      });
+    }
+  };
+
+  /* ==========================================================
+     INIT
+     ========================================================== */
+  function init() {
+    Store.load();
+    if (!Store.state.queue.items.length) App.loadDemo();       // never empty on first load
+    Queue.reinit();
+    Settings.applyTheme(Store.state.settings.theme);
+    UI.init();
+    WheelController.init();
+    Keyboard.init();
+    MediaSessionBridge.init();
+    Router.start();
+
+    if (location.protocol === 'file:') {
+      const b = document.getElementById('fileBanner');
+      b.hidden = false;
+      document.getElementById('bannerClose').addEventListener('click', () => { b.hidden = true; });
+    }
+    window.addEventListener('online', () => { UI.toast('Back online'); PlayerController.loadApi(); UI.refresh(); });
+    window.addEventListener('offline', () => { UI.toast('You are offline \u2014 playback and search need a connection.', 'error'); UI.refresh(); });
+    window.addEventListener('pagehide', () => Store.saveNow());
+    document.addEventListener('visibilitychange', () => { if (document.hidden) Store.saveNow(); });
+
+    if (navigator.onLine) PlayerController.loadApi();
+    else { UI.setArtMessage('Offline \u2014 the YouTube player loads when you reconnect.'); UI.refreshChrome(); }
+    if (Store.lastError) UI.toast(Store.lastError, 'error', 5000);
+  }
+  init();
+})();
+</script>
+</body>
+</html>
